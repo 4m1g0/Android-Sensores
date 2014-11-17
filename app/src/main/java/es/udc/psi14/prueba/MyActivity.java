@@ -28,10 +28,11 @@ import java.util.Iterator;
 public class MyActivity extends Activity implements View.OnClickListener{
 
     private static final String TAG = "USB-OTG";
+    private static final String CONECTIVIDAD ="estadoConectevidad";
 
     // Variables GUI
     Button btn,led;
-    boolean LED;
+    boolean estadoLed,estadoConectividad;
 
     TextView textViewTemperatura;
     TextView textViewHumedad;
@@ -60,6 +61,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)){
                         Log.d(TAG, "Permiso aceptado");
                         processComunicationUSB();
+                        conectado();
                     }else{
                         Log.e(TAG, "Permiso denegado");
                     }
@@ -73,12 +75,21 @@ public class MyActivity extends Activity implements View.OnClickListener{
                     // call your method that cleans up and closes communication with the device
                     desconectado();
                 }
+
+
             }
 
         }
     };
 
+    private void conectado() {
+        estadoConectividad=true;
+
+    }
+
     private void desconectado() {
+        estadoConectividad=false;
+
     }
 
     @Override
@@ -86,7 +97,10 @@ public class MyActivity extends Activity implements View.OnClickListener{
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        estadoConectividad=savedInstanceState.getBoolean(CONECTIVIDAD,false);
+        if (estadoConectividad){
+            conectar();
+        }
         textViewTemperatura = (TextView) findViewById(R.id.textView1);
         textViewHumedad = (TextView) findViewById(R.id.textView2);
         ruido= (TextView) findViewById(R.id.textView4);
@@ -100,7 +114,12 @@ public class MyActivity extends Activity implements View.OnClickListener{
         btn.setOnClickListener(this);
         led = (Button) findViewById(R.id.led);
         led.setOnClickListener(this);
-        LED=false;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(CONECTIVIDAD,estadoConectividad);
     }
 
     @Override
@@ -189,36 +208,41 @@ public class MyActivity extends Activity implements View.OnClickListener{
 
     }
 
+    private void conectar() {
+        //TODO: Obtemos el Manager USB del sistema Android
+        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
+        // TODO: Recuperamos todos los dispositvos USB detectados
+        HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
+
+        //TODO: en nuestor ejemplo solo conectamos un disposito asi que sera
+        // el unico que encontraremos.
+        Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
+        if (deviceIterator.hasNext()) {
+            mUsbDevice = deviceIterator.next();
+            Log.d(TAG, "Name: " + mUsbDevice.getDeviceName());
+            Log.d(TAG, "Protocol: " + mUsbDevice.getDeviceProtocol());
+            //TODO: Solicitamos el permiso al usuario.
+            mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
+            estadoConectividad=true;
+
+        } else {
+            Log.e(TAG, "Dispositvo USB no detectado.");
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        if (v == btn) {
-            //TODO: Obtemos el Manager USB del sistema Android
-            mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
-            // TODO: Recuperamos todos los dispositvos USB detectados
-            HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
-
-            //TODO: en nuestor ejemplo solo conectamos un disposito asi que sera
-            // el unico que encontraremos.
-            Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-            if (deviceIterator.hasNext()) {
-                mUsbDevice = deviceIterator.next();
-                Log.d(TAG, "Name: " + mUsbDevice.getDeviceName());
-                Log.d(TAG, "Protocol: " + mUsbDevice.getDeviceProtocol());
-                //TODO: Solicitamos el permiso al usuario.
-                mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
-
-            } else {
-                Log.e(TAG, "Dispositvo USB no detectado.");
-            }
+        if (v == btn){
+            conectar();
         } else if (v == led) {
             int bufferMaxLength = epOUT.getMaxPacketSize();
             ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
             UsbRequest request = new UsbRequest(); // create an URB
             request.initialize(mUsbDeviceConnection, epOUT);
-            LED=!LED;
+            estadoLed=!estadoLed;
             String msg;
-            if (LED){
+            if (estadoLed){
                 msg = "1";
             }else{
                 msg = "0";
