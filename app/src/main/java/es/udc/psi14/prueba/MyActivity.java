@@ -71,11 +71,15 @@ public class MyActivity extends Activity implements View.OnClickListener{
                 UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
                     // call your method that cleans up and closes communication with the device
+                    desconectado();
                 }
             }
 
         }
     };
+
+    private void desconectado() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +120,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
     protected void onPause() {
         super.onPause();
 
-        if (this.mUsbReceiver != null){
+        if (!(this.mUsbReceiver == null)){
             unregisterReceiver(mUsbReceiver);
         }
 
@@ -209,19 +213,15 @@ public class MyActivity extends Activity implements View.OnClickListener{
             }
         } else if (v == led) {
             int bufferMaxLength = epOUT.getMaxPacketSize();
-            Toast.makeText(this, "11111111111111111", Toast.LENGTH_LONG).show();
             ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
             UsbRequest request = new UsbRequest(); // create an URB
             request.initialize(mUsbDeviceConnection, epOUT);
-            Toast.makeText(this, "222222222222222222222222", Toast.LENGTH_LONG).show();
             LED=!LED;
             String msg;
             if (LED){
                 msg = "1";
-                Toast.makeText(this, "H", Toast.LENGTH_LONG).show();
             }else{
                 msg = "0";
-                Toast.makeText(this, "L", Toast.LENGTH_LONG).show();
             }
             buffer.put(msg.getBytes());
 
@@ -239,7 +239,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
         @Override
         protected String doInBackground(String... params) {
 
-            String line=new String();
+            String line="";
 
 
             int bufferMaxLength=epIN.getMaxPacketSize();
@@ -258,35 +258,40 @@ public class MyActivity extends Activity implements View.OnClickListener{
 
                     if (line.length()>0){
                         //Toast.makeText(MyActivity.this, line, Toast.LENGTH_LONG).show();
-                        //char endLine = line.charAt(line.length()-1);
-                        //if (endLine == ';'){
-                        line=line.split(";")[0];
-                            Log.d(TAG, "Encontrada final de linea: " + line);
-                            String temperature="";
-                            String humidity="";
-                            String[] medida = line.split(":");
+                        String[] msg= (line.split(";"));
+                        String temperature="";
+                        String humidity="";
+
                         String altitud="";
                         String luminusidad="";
                         String noise="";
                         String preasure="";
+                        Log.d(TAG, "Encontrada final de linea: " + line);
+                        for(int i=0; i<msg.length; i++){
+
+                            String[] medida = msg[i].split(":");
+
                             if (medida[0].equals("T")){
-                                 temperature=medida[1];
+                                temperature=medida[1];
                             }
                             if (medida[0].equals("H")){
                                 humidity=medida[1];
                             }
-                        if (medida[0].equals("P")) {
-                            preasure = medida[1];
+                            if (medida[0].equals("P")) {
+                                preasure = medida[1];
+                            }
+                            if (medida[0].equals("N")){
+                                noise=medida[1];
+                            }
+                            if (medida[0].equals("L")){
+                                luminusidad=medida[1];
+                            }
+                            if (medida[0].equals("A")){
+                                altitud=medida[1];
+                            }
                         }
-                        if (medida[0].equals("N")){
-                            noise=medida[1];
-                        }
-                        if (medida[0].equals("L")){
-                            luminusidad=medida[1];
-                        }
-                        if (medida[0].equals("A")){
-                            altitud=medida[1];
-                        }
+
+
 
                             // TODO: Procesar Linea
                             // para la introduccion de forma dínamica tener en cuenta
