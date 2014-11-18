@@ -32,7 +32,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
 
     // Variables GUI
     Button btn,led;
-    boolean estadoLed,estadoConectividad;
+    boolean estadoLed,estadoConectividad, conectado;
 
     TextView textViewTemperatura;
     TextView textViewHumedad;
@@ -61,7 +61,6 @@ public class MyActivity extends Activity implements View.OnClickListener{
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)){
                         Log.d(TAG, "Permiso aceptado");
                         processComunicationUSB();
-                        conectado();
                     }else{
                         Log.e(TAG, "Permiso denegado");
                     }
@@ -73,7 +72,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
                 UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
                     // call your method that cleans up and closes communication with the device
-                    desconectado();
+                    //desconectado();
                 }
 
 
@@ -97,9 +96,10 @@ public class MyActivity extends Activity implements View.OnClickListener{
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        estadoConectividad=savedInstanceState.getBoolean(CONECTIVIDAD,false);
-        if (estadoConectividad){
-            conectar();
+        conectado=false;
+        Toast.makeText(this, "Oncreate", Toast.LENGTH_LONG).show();
+        if (savedInstanceState!=null) {
+            estadoConectividad = savedInstanceState.getBoolean(CONECTIVIDAD, false);
         }
         textViewTemperatura = (TextView) findViewById(R.id.textView1);
         textViewHumedad = (TextView) findViewById(R.id.textView2);
@@ -132,6 +132,18 @@ public class MyActivity extends Activity implements View.OnClickListener{
         //TODO: Registro del Broadcast
         registerReceiver(mUsbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         registerReceiver(mUsbReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
+
+        if (estadoConectividad) {
+                Toast.makeText(this, "Estado recuperado: true", Toast.LENGTH_LONG).show();
+        }else{
+                Toast.makeText(this, "Estado recuperado: false", Toast.LENGTH_LONG).show();
+        }
+
+        if (estadoConectividad&&!conectado) {
+
+            conectar();
+        }
+
 
     }
 
@@ -198,25 +210,16 @@ public class MyActivity extends Activity implements View.OnClickListener{
         // TODO: Ejecutar en un hilo
         new UpdateHumidityTemperature().execute();
 
-        //TODO: Otro metod de obtener datos Syncronhus
-        //while (true) {
-        //Arrays.fill(buffer, (byte) 0);
-        //int ret = mUsbDeviceConnection.bulkTransfer(epIN, buffer, buffer.length, TIMEOUT);
-        //Log.d("USB","Return BulkTransfer: " + ret);
-        //Log.d("USB","Buffer BulkTransfer: " + new String(buffer));
-        //}
-
     }
 
     private void conectar() {
+        Toast.makeText(this, "Pidiendo permiso", Toast.LENGTH_LONG).show();
         //TODO: Obtemos el Manager USB del sistema Android
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
         // TODO: Recuperamos todos los dispositvos USB detectados
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
 
-        //TODO: en nuestor ejemplo solo conectamos un disposito asi que sera
-        // el unico que encontraremos.
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
         if (deviceIterator.hasNext()) {
             mUsbDevice = deviceIterator.next();
@@ -225,6 +228,9 @@ public class MyActivity extends Activity implements View.OnClickListener{
             //TODO: Solicitamos el permiso al usuario.
             mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
             estadoConectividad=true;
+            conectado=true;
+
+            conectado();
 
         } else {
             Log.e(TAG, "Dispositvo USB no detectado.");
@@ -314,16 +320,6 @@ public class MyActivity extends Activity implements View.OnClickListener{
                                 altitud=medida[1];
                             }
                         }
-
-
-
-                            // TODO: Procesar Linea
-                            // para la introduccion de forma dínamica tener en cuenta
-                            //String[] parts = line.split(",");
-                            //String humidity = parts[0].split(":")[1];
-                            //String temperature = parts[1].split(":")[1].replace(";", "");
-                            //vamos a ver si esto funciona
-
                             // TODO: Actualizamos el GUI
                             publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure);
 
