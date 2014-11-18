@@ -4,5 +4,22 @@
     <string name="app_name">prueba</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_prueaba">prueaba</string>
+    <string name="temperatura">Temperatura:</string>
+    <string name="humedad">Humedad:</string>
+    <string name="altitud">Altitud:</string>
+    <string name="ruido">Ruido:</string>
+    <string name="luminosidad">Luminosidad:</string>
+    <string name="presion">presión</string>
+    <string name="led">Led</string>
+    <string name="conectar">Conectar</string>
+    <string name="permisoAceptado">Permiso aceptado</string>
+    <string name="permisoDenegado">Permiso Denegado</string>
+    <string name="noPosibleConect">No se ha podido conectar con el dispositivo USB</string>
+    <string name="protocolo">Protocolo</string>
+    <string name="nombre">nombre</string>
+    <string name="dispositvoUSBNoDetec">Dispositvo USB no detectado</string>
+    <string name="enviado">Enviado</string>
+    <string name="lineaFinal">Encontrada final de linea</string>
 
 </resources>

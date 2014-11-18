@@ -25,18 +25,16 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class MyActivity extends Activity implements View.OnClickListener{
+public class SensoresAndorid extends Activity implements View.OnClickListener{
 
     private static final String TAG = "USB-OTG";
     private static final String CONECTIVIDAD ="estadoConectevidad";
 
-    // Variables GUI
-    Button btn,led;
+    // TODO: Variables GUI
+    Button conecta,led;
     boolean estadoLed,estadoConectividad, conectado;
 
-    TextView textViewTemperatura;
-    TextView textViewHumedad;
-    TextView altitud, ruido, luminusidad;
+    TextView tv_temperatura, tv_humedad, tv_altitud, tv_ruido, tv_luminusidad, tv_presion;
 
     // TODO: Variables USB
     UsbManager mUsbManager;
@@ -59,10 +57,10 @@ public class MyActivity extends Activity implements View.OnClickListener{
                 synchronized (this) {
 
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)){
-                        Log.d(TAG, "Permiso aceptado");
+                        Log.d(TAG, getString(R.string.permisoAceptado));
                         processComunicationUSB();
                     }else{
-                        Log.e(TAG, "Permiso denegado");
+                        Log.e(TAG, getString(R.string.permisoDenegado));
                     }
                 }
             }
@@ -71,7 +69,6 @@ public class MyActivity extends Activity implements View.OnClickListener{
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
-                    // call your method that cleans up and closes communication with the device
                     //desconectado();
                 }
 
@@ -97,21 +94,22 @@ public class MyActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         conectado=false;
-        Toast.makeText(this, "Oncreate", Toast.LENGTH_LONG).show();
         if (savedInstanceState!=null) {
             estadoConectividad = savedInstanceState.getBoolean(CONECTIVIDAD, false);
         }
-        textViewTemperatura = (TextView) findViewById(R.id.textView1);
-        textViewHumedad = (TextView) findViewById(R.id.textView2);
-        ruido= (TextView) findViewById(R.id.textView4);
-        altitud= (TextView) findViewById(R.id.textView3);
-        luminusidad=(TextView) findViewById(R.id.textView5);
+        tv_temperatura = (TextView) findViewById(R.id.tv_temperatura);
+        tv_humedad = (TextView) findViewById(R.id.tv_humedad );
+        tv_ruido = (TextView) findViewById(R.id.tv_ruido);
+        tv_altitud = (TextView) findViewById(R.id.tv_altitud);
+        tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
+        tv_presion =(TextView) findViewById(R.id.tv_presion);
+
 
 
 
         // TODO: Boton Conectar.
-        btn = (Button) findViewById(R.id.button1);
-        btn.setOnClickListener(this);
+        conecta = (Button) findViewById(R.id.conectar);
+        conecta.setOnClickListener(this);
         led = (Button) findViewById(R.id.led);
         led.setOnClickListener(this);
     }
@@ -132,12 +130,6 @@ public class MyActivity extends Activity implements View.OnClickListener{
         //TODO: Registro del Broadcast
         registerReceiver(mUsbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         registerReceiver(mUsbReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
-
-        if (estadoConectividad) {
-                Toast.makeText(this, "Estado recuperado: true", Toast.LENGTH_LONG).show();
-        }else{
-                Toast.makeText(this, "Estado recuperado: false", Toast.LENGTH_LONG).show();
-        }
 
         if (estadoConectividad&&!conectado) {
 
@@ -163,7 +155,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
 
         mUsbDeviceConnection = mUsbManager.openDevice(mUsbDevice);
         if(mUsbDeviceConnection == null){
-            Log.e(TAG, "No se ha podido conectar con el dispositivo USB.");
+            Log.e(TAG, getString(R.string.noPosibleConect));
             finish();
         }
 
@@ -213,7 +205,6 @@ public class MyActivity extends Activity implements View.OnClickListener{
     }
 
     private void conectar() {
-        Toast.makeText(this, "Pidiendo permiso", Toast.LENGTH_LONG).show();
         //TODO: Obtemos el Manager USB del sistema Android
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
@@ -223,8 +214,8 @@ public class MyActivity extends Activity implements View.OnClickListener{
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
         if (deviceIterator.hasNext()) {
             mUsbDevice = deviceIterator.next();
-            Log.d(TAG, "Name: " + mUsbDevice.getDeviceName());
-            Log.d(TAG, "Protocol: " + mUsbDevice.getDeviceProtocol());
+            Log.d(TAG, getString(R.string.nombre)+ ": " + mUsbDevice.getDeviceName());
+            Log.d(TAG, getString(R.string.protocolo)+ ": "+ mUsbDevice.getDeviceProtocol());
             //TODO: Solicitamos el permiso al usuario.
             mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
             estadoConectividad=true;
@@ -233,13 +224,13 @@ public class MyActivity extends Activity implements View.OnClickListener{
             conectado();
 
         } else {
-            Log.e(TAG, "Dispositvo USB no detectado.");
+            Log.e(TAG, getString(R.string.dispositvoUSBNoDetec));
         }
     }
 
     @Override
     public void onClick(View v) {
-        if (v == btn){
+        if (v == conecta){
             conectar();
         } else if (v == led) {
             int bufferMaxLength = epOUT.getMaxPacketSize();
@@ -258,7 +249,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
             // queue the outbound request
             boolean retval = request.queue(buffer, 1);
             if (mUsbDeviceConnection.requestWait() == request) {
-                Toast.makeText(this, "Enviado", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.enviado), Toast.LENGTH_LONG).show();
 
             }
         }
@@ -296,7 +287,7 @@ public class MyActivity extends Activity implements View.OnClickListener{
                         String luminusidad="";
                         String noise="";
                         String preasure="";
-                        Log.d(TAG, "Encontrada final de linea: " + line);
+                        Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
 
                             String[] medida = msg[i].split(":");
@@ -339,14 +330,15 @@ public class MyActivity extends Activity implements View.OnClickListener{
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
 
-            if (!(values[0].isEmpty())) textViewHumedad.setText("Humedad: " + values[0]);
-            if (!(values[1].isEmpty())) textViewTemperatura.setText("Temperatura:" +  values[1]);
-            if (!(values[2].isEmpty())) altitud.setText("Altitud:" +  values[2]);
-            if (!(values[3].isEmpty())) ruido.setText("Noise:" +  values[3]);
-            if (!(values[4].isEmpty())) luminusidad.setText("Luminusidad:" +  values[4]);
+            if (!(values[0].isEmpty())) tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
+            if (!(values[1].isEmpty())) tv_temperatura.setText(getString(R.string.temperatura)+ ": " +  values[1]+" Cº");
+            if (!(values[2].isEmpty())) tv_altitud.setText(getString(R.string.altitud)+ ": " +  values[2]+" m");
+            if (!(values[3].isEmpty())) tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
+            if (!(values[4].isEmpty())) tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
+            if (!(values[5].isEmpty())) tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
 
         }
 
-    };
+    }
 
 }

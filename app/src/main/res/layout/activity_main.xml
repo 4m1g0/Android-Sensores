@@ -1,55 +1,64 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout
     android:orientation="vertical"
-    tools:context="${packageName}.${activityClass}" >
-
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    , , , , , ;
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tv_temperatura"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Temperatura:" />
+        android:text="@string/temperatura" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tv_humedad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Humedad:" />
+        android:text="@string/humedad" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tv_altitud"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="@string/altitud" />
+
+    <TextView
+        android:id="@+id/tv_ruido"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Altitud:" />
+        android:text="@string/ruido" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/tv_luminusidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Ruido:" />
+        android:text="@string/luminosidad" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/tv_presion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Luminusidad:" />
+        android:text="@string/presion" />
 
     <Button
         android:id="@+id/led"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Led" />
+        android:text="@string/led" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/conectar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conectar" />
+        android:text="@string/conectar" />
 
 </LinearLayout>
