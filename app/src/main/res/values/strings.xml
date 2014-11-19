@@ -10,7 +10,7 @@
     <string name="altitud">Altitud:</string>
     <string name="ruido">Ruido:</string>
     <string name="luminosidad">Luminosidad:</string>
-    <string name="presion">presión</string>
+    <string name="presion">Presión:</string>
     <string name="led">Led</string>
     <string name="conectar">Conectar</string>
     <string name="permisoAceptado">Permiso aceptado</string>
