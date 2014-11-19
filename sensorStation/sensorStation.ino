@@ -61,12 +61,16 @@ unsigned long loopTimer = 0, sensorsTimer=0, lcdTimer = 0;
 #define SENSORS_TIME 1000
 #define LCD_TIME 5000
 int lcdActual = 0;
+int encender = 0;
+int led = 13;
 
 void setup()
 {
   Serial.begin(9600);
   lcd.begin(16, 2);
   lcd.clear();
+  
+  pinMode(led, OUTPUT);
   
   //Wire.begin();
   //bmp085Calibration();
@@ -91,6 +95,19 @@ void loop()
      calculateLuminosity();
      calculateHumidity();
      calculateNoise();
+     if (Serial.available() > 0){
+       encender = Serial.parseInt();
+       if (encender ==0){
+         digitalWrite(led, LOW);
+       }else{
+         digitalWrite(led,HIGH);
+       }
+     }
+     if (encender == 0){
+       Serial.println("LED:L;");
+     }else{
+       Serial.println("LED:H;");
+     }
   }
   if (0) //((millis()-lcdTimer) > LCD_TIME)
   {
