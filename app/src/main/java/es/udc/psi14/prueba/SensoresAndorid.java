@@ -243,16 +243,17 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
             UsbRequest request = new UsbRequest(); // create an URB
             request.initialize(mUsbDeviceConnection, epOUT);
-            estadoLed=!estadoLed;
             String msg;
+            estadoLed=led.isChecked();
             if (estadoLed){
                 msg = "1";
             }else{
                 msg = "0";
             }
+
             buffer.put(msg.getBytes());
 
-            // queue the outbound request
+            //queue the outbound request
             boolean retval = request.queue(buffer, 1);
             if (mUsbDeviceConnection.requestWait() == request) {
                 Toast.makeText(this, getString(R.string.enviado), Toast.LENGTH_LONG).show();
