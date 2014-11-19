@@ -71,7 +71,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
-                    //desconectado();
+                    desconectado();
                 }
 
 
@@ -89,7 +89,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
     }
 
     private void desconectado() {
-        estadoConectividad=false;
+        led.setVisibility(View.GONE);
 
     }
 
