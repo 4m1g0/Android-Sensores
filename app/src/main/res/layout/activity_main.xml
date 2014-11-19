@@ -49,16 +49,20 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/presion" />
 
-    <Button
-        android:id="@+id/led"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/led" />
 
     <Button
         android:id="@+id/conectar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/conectar" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/led"
+        android:id="@+id/led"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:visibility="gone"/>
 
 </LinearLayout>

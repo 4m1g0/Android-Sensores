@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +32,8 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
     private static final String CONECTIVIDAD ="estadoConectevidad";
 
     // TODO: Variables GUI
-    Button conecta,led;
+    Button conecta;
+    Switch led;
     boolean estadoLed,estadoConectividad, conectado;
 
     TextView tv_temperatura, tv_humedad, tv_altitud, tv_ruido, tv_luminusidad, tv_presion;
@@ -80,6 +82,9 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
 
     private void conectado() {
         estadoConectividad=true;
+        conecta.setVisibility(View.GONE);
+        led.setVisibility(View.VISIBLE);
+
 
     }
 
@@ -110,8 +115,9 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         // TODO: Boton Conectar.
         conecta = (Button) findViewById(R.id.conectar);
         conecta.setOnClickListener(this);
-        led = (Button) findViewById(R.id.led);
+        led = (Switch) findViewById(R.id.led);
         led.setOnClickListener(this);
+        led.setChecked(estadoLed);
     }
 
     @Override
@@ -287,10 +293,14 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                         String luminusidad="";
                         String noise="";
                         String preasure="";
+                        String confLed="";
                         Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
 
                             String[] medida = msg[i].split(":");
+                            if (medida[0].equals("LED")){
+                                confLed=medida[1];
+                            }
 
                             if (medida[0].equals("T")){
                                 temperature=medida[1];
@@ -312,7 +322,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                             }
                         }
                             // TODO: Actualizamos el GUI
-                            publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure);
+                            publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
 
                             line = "";
                         //}
@@ -336,7 +346,15 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             if (!(values[3].isEmpty())) tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
             if (!(values[4].isEmpty())) tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
             if (!(values[5].isEmpty())) tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
-
+            if (!(values[6].isEmpty())) {
+                if (values[6].equals("H")){
+                    estadoLed=true;
+                }
+                else {
+                    estadoLed=false;
+                }
+                led.setChecked(estadoLed);
+            }
         }
 
     }
