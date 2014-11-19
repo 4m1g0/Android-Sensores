@@ -285,7 +285,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                     line = line + new String(mBuffer.array(), "UTF-8").trim();
 
                     if (line.length()>0){
-                        //Toast.makeText(MyActivity.this, line, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(SensoresAndorid.this, line, Toast.LENGTH_LONG).show();
                         String[] msg= (line.split(";"));
                         String temperature="";
                         String humidity="";
@@ -295,10 +295,10 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                         String noise="";
                         String preasure="";
                         String confLed="";
-                        Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
+                        //Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
-
                             String[] medida = msg[i].split(":");
+                            //String[] medida = msg[0].split(":");
                             if (medida[0].equals("LED")){
                                 confLed=medida[1];
                             }
@@ -322,11 +322,11 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                                 altitud=medida[1];
                             }
                         }
-                            //  Actualizamos el GUI
-                            publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
+                        //  Actualizamos el GUI
+                        publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
 
-                            line = "";
-                        //}
+                        line = "";
+
                     }
 
                 } catch (Exception e) {

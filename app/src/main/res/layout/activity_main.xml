@@ -50,6 +50,7 @@
         android:text="@string/presion" />
 
 
+
     <Button
         android:id="@+id/conectar"
         android:layout_width="match_parent"
