@@ -31,14 +31,14 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
     private static final String TAG = "USB-OTG";
     private static final String CONECTIVIDAD ="estadoConectevidad";
 
-    // TODO: Variables GUI
+    //  Variables GUI
     Button conecta;
     Switch led;
     boolean estadoLed,estadoConectividad, conectado;
 
     TextView tv_temperatura, tv_humedad, tv_altitud, tv_ruido, tv_luminusidad, tv_presion;
 
-    // TODO: Variables USB
+    //  Variables USB
     UsbManager mUsbManager;
     UsbDevice mUsbDevice;
     PendingIntent mPermissionIntent;
@@ -46,7 +46,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
     UsbEndpoint epIN = null;
     UsbEndpoint epOUT = null;
 
-    // TODO: Al conectar a un dispositvo USB se solicita un permiso al usuario
+    //  Al conectar a un dispositvo USB se solicita un permiso al usuario
     // este broadcast se encarga de recoger la respuesta del usuario.
     private static final String ACTION_USB_PERMISSION = "com.android.USB_PERMISSION";
 
@@ -54,7 +54,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         public void onReceive(Context context, android.content.Intent intent) {
             String action = intent.getAction();
 
-            // TODO: Al aceptar el permiso del usuario.
+            //  Al aceptar el permiso del usuario.
             if (ACTION_USB_PERMISSION.equals(action)){
                 synchronized (this) {
 
@@ -67,7 +67,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                 }
             }
 
-            // TODO: Al desconectar el dispositivo USB cerramos las conexiones y liberamos la variables.
+            //  Al desconectar el dispositivo USB cerramos las conexiones y liberamos la variables.
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
@@ -112,7 +112,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
 
 
 
-        // TODO: Boton Conectar.
+        //  Boton Conectar.
         conecta = (Button) findViewById(R.id.conectar);
         conecta.setOnClickListener(this);
         led = (Switch) findViewById(R.id.led);
@@ -130,10 +130,10 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
     protected void onResume() {
         super.onResume();
 
-        //TODO: Solicitamos permiso al usuario
+        // Solicitamos permiso al usuario
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 
-        //TODO: Registro del Broadcast
+        // Registro del Broadcast
         registerReceiver(mUsbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         registerReceiver(mUsbReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
@@ -165,10 +165,10 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             finish();
         }
 
-        // TODO: getInterfase(1) Obtiene el tipo de comunicacion CDC (USB_CLASS_CDC_DATA)
+        //  getInterfase(1) Obtiene el tipo de comunicacion CDC (USB_CLASS_CDC_DATA)
         UsbInterface mUsbInterface = mUsbDevice.getInterface(1);
 
-        // TODO: Obtenemos los Endpoints de entrada y salida para el interface que hemos elegido.
+        //  Obtenemos los Endpoints de entrada y salida para el interface que hemos elegido.
         for (int i = 0; i < mUsbInterface.getEndpointCount(); i++) {
             if (mUsbInterface.getEndpoint(i).getType() == UsbConstants.USB_ENDPOINT_XFER_BULK) {
                 if (mUsbInterface.getEndpoint(i).getDirection() == UsbConstants.USB_DIR_IN)
@@ -180,7 +180,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
 
         mUsbDeviceConnection.claimInterface(mUsbInterface, forceClaim);
 
-        // TODO: Mensaje de configuración para el Device.
+        //  Mensaje de configuración para el Device.
         int baudRate = 115200;
         byte stopBitsByte = 1;
         byte parityBitesByte = 0;
@@ -205,16 +205,16 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         // 0x1  -> Activado.
         // Mas info: http://www.usb.org/developers/devclass_docs/usbcdc11.pdf
 
-        // TODO: Ejecutar en un hilo
+        //  Ejecutar en un hilo
         new UpdateHumidityTemperature().execute();
 
     }
 
     private void conectar() {
-        //TODO: Obtemos el Manager USB del sistema Android
+        // Obtemos el Manager USB del sistema Android
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
-        // TODO: Recuperamos todos los dispositvos USB detectados
+        //  Recuperamos todos los dispositvos USB detectados
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
 
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
@@ -222,7 +222,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             mUsbDevice = deviceIterator.next();
             Log.d(TAG, getString(R.string.nombre)+ ": " + mUsbDevice.getDeviceName());
             Log.d(TAG, getString(R.string.protocolo)+ ": "+ mUsbDevice.getDeviceProtocol());
-            //TODO: Solicitamos el permiso al usuario.
+            // Solicitamos el permiso al usuario.
             mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
             estadoConectividad=true;
             conectado=true;
@@ -322,7 +322,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                                 altitud=medida[1];
                             }
                         }
-                            // TODO: Actualizamos el GUI
+                            //  Actualizamos el GUI
                             publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
 
                             line = "";
