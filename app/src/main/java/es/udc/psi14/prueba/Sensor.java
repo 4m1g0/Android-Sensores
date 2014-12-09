@@ -8,16 +8,17 @@ public class Sensor {
     private String nombre,identificador;
     private long id, fecha;
 
+
     //TODO: añandir coordenadas gps?
 
-    public void Sensor(int medida, String nombre, String identificador, long fecha ){
+    public Sensor(int medida, String nombre, String identificador, long fecha ){
         this.medida=medida;
         this.nombre=nombre;
         this.identificador=identificador;
         this.fecha=fecha;
     }
 
-    public void Sensor(int medida, String nombre, String identificador, long fecha, long id ){
+    public Sensor(int medida, String nombre, String identificador, long fecha, long id ){
         this.medida=medida;
         this.nombre=nombre;
         this.identificador=identificador;

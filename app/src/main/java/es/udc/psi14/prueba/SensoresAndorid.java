@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.nio.ByteBuffer;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -35,6 +36,8 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
     Button conecta;
     Switch led;
     boolean estadoLed,estadoConectividad, conectado;
+    SensoresDataBaseHelper db;
+
 
     TextView tv_temperatura, tv_humedad, tv_altitud, tv_ruido, tv_luminusidad, tv_presion;
 
@@ -108,6 +111,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         tv_altitud = (TextView) findViewById(R.id.tv_altitud);
         tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
         tv_presion =(TextView) findViewById(R.id.tv_presion);
+        db=new SensoresDataBaseHelper(this);
 
 
 
@@ -340,13 +344,52 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
+            Sensor sensor;
 
-            if (!(values[0].isEmpty())) tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
-            if (!(values[1].isEmpty())) tv_temperatura.setText(getString(R.string.temperatura)+ ": " +  values[1]+" Cº");
-            if (!(values[2].isEmpty())) tv_altitud.setText(getString(R.string.altitud)+ ": " +  values[2]+" m");
-            if (!(values[3].isEmpty())) tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
-            if (!(values[4].isEmpty())) tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
-            if (!(values[5].isEmpty())) tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
+            Calendar c = Calendar.getInstance();
+            if (!(values[0].isEmpty())){
+                tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
+                //TODO: ocuparse del identificador
+                sensor= new Sensor(Integer.parseInt(values[0]), "humedad", "", c.getTimeInMillis());
+                long code = db.insertSensor(sensor);
+                if (code!=-1){
+                }
+            }
+            if (!(values[1].isEmpty())){
+                tv_temperatura.setText(getString(R.string.temperatura)+ ": " +  values[1]+" Cº");
+                sensor= new Sensor(Integer.parseInt(values[1]), "temperatura", "", c.getTimeInMillis());
+                long code = db.insertSensor(sensor);
+                if (code!=-1){
+                }
+            }
+            if (!(values[2].isEmpty())){
+                tv_altitud.setText(getString(R.string.altitud)+ ": " +  values[2]+" m");
+                sensor= new Sensor(Integer.parseInt(values[2]), "altitud", "", c.getTimeInMillis());
+                long code = db.insertSensor(sensor);
+                if (code!=-1){
+                }
+            }
+            if (!(values[3].isEmpty())){
+                tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
+                sensor= new Sensor(Integer.parseInt(values[3]), "ruido", "", c.getTimeInMillis());
+                long code = db.insertSensor(sensor);
+                if (code!=-1){
+                }
+            }
+            if (!(values[4].isEmpty())){
+                tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
+                sensor= new Sensor(Integer.parseInt(values[4]), "luminosidad", "", c.getTimeInMillis());
+                long code = db.insertSensor(sensor);
+                if (code!=-1){
+                }
+            }
+            if (!(values[5].isEmpty())){
+                tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
+                sensor= new Sensor(Integer.parseInt(values[5]), "presion", "", c.getTimeInMillis());
+                long code = db.insertSensor(sensor);
+                if (code!=-1){
+                }
+            }
             if (!(values[6].isEmpty())) {
                 if (values[6].equals("H")){
                     estadoLed=true;

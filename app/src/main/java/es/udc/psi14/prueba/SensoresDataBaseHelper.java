@@ -47,6 +47,16 @@ public class SensoresDataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void  deleteSensor(String sensor){
+        getWritableDatabase().delete(TABLE_NOMBRE, COL_NOMBRE + "=?",new String[] {sensor});
+    }
+
+    public Cursor getNSensor (int N, String sensor){
+        String[] campos = new String[] {COL_MEDIDA, COL_FECHA};
+        String[] args = new String[] {"sensor"};
+        return getWritableDatabase().query(TABLE_NOMBRE, campos, COL_NOMBRE+"=?", args, null,null,COL_ID+" DESC" , String.valueOf(N));
+    }
+
     public long insertSensor(Sensor sensor) {
         ContentValues cv = new ContentValues();
         cv.put(COL_NOMBRE, sensor.getNombre());
