@@ -29,13 +29,13 @@ import java.util.Iterator;
 
 public class SensoresAndorid extends Activity implements View.OnClickListener{
 
-    private static final String TAG = "USB-OTG";
+    private static final String TAG = SensoresAndorid.class.getName();
     private static final String CONECTIVIDAD ="estadoConectevidad";
 
     //  Variables GUI
-    Button conecta;
-    Switch led;
-    boolean estadoLed,estadoConectividad, conectado;
+    Button but_conectar;
+    Switch but_led;
+    boolean estadoLed, permissionGranted, conectado;
     SensoresDataBaseHelper db;
 
 
@@ -60,10 +60,14 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             //  Al aceptar el permiso del usuario.
             if (ACTION_USB_PERMISSION.equals(action)){
                 synchronized (this) {
-
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)){
                         Log.d(TAG, getString(R.string.permisoAceptado));
-                        processComunicationUSB();
+                        permissionGranted = true;
+                        conectado=true;
+                        but_conectar.setVisibility(View.GONE);
+                        but_led.setVisibility(View.VISIBLE);
+                        configureComunicationUSB();
+                        new UpdateSensors().execute();
                     }else{
                         Log.e(TAG, getString(R.string.permisoDenegado));
                     }
@@ -72,39 +76,26 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
 
             //  Al desconectar el dispositivo USB cerramos las conexiones y liberamos la variables.
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
-                    desconectado();
+                    but_led.setVisibility(View.GONE);
+                    permissionGranted = false;
+                    conectado = false;
                 }
-
-
             }
-
         }
     };
 
-    private void conectado() {
-        estadoConectividad=true;
-        conecta.setVisibility(View.GONE);
-        led.setVisibility(View.VISIBLE);
-
-
-    }
-
-    private void desconectado() {
-        led.setVisibility(View.GONE);
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        conectado=false;
+
         if (savedInstanceState!=null) {
-            estadoConectividad = savedInstanceState.getBoolean(CONECTIVIDAD, false);
+            permissionGranted = savedInstanceState.getBoolean(CONECTIVIDAD, false);
         }
+
         tv_temperatura = (TextView) findViewById(R.id.tv_temperatura);
         tv_humedad = (TextView) findViewById(R.id.tv_humedad );
         tv_ruido = (TextView) findViewById(R.id.tv_ruido);
@@ -113,55 +104,38 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         tv_presion =(TextView) findViewById(R.id.tv_presion);
         db=new SensoresDataBaseHelper(this);
 
-
-
-
-        //  Boton Conectar.
-        conecta = (Button) findViewById(R.id.conectar);
-        conecta.setOnClickListener(this);
-        led = (Switch) findViewById(R.id.led);
-        led.setOnClickListener(this);
-        led.setChecked(estadoLed);
+        but_conectar = (Button) findViewById(R.id.conectar);
+        but_conectar.setOnClickListener(this);
+        but_led = (Switch) findViewById(R.id.led);
+        but_led.setOnClickListener(this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(CONECTIVIDAD,estadoConectividad);
+        outState.putBoolean(CONECTIVIDAD, permissionGranted);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Solicitamos permiso al usuario
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-
         // Registro del Broadcast
         registerReceiver(mUsbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
         registerReceiver(mUsbReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
-        if (estadoConectividad&&!conectado) {
-
+        if (permissionGranted && !conectado) {
             conectar();
         }
-
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        if (!(this.mUsbReceiver == null)){
-            unregisterReceiver(mUsbReceiver);
-        }
-
+        unregisterReceiver(mUsbReceiver);
     }
 
-    protected void processComunicationUSB() {
-
-        boolean forceClaim = true;
+    protected void configureComunicationUSB() {
 
         mUsbDeviceConnection = mUsbManager.openDevice(mUsbDevice);
         if(mUsbDeviceConnection == null){
@@ -182,7 +156,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             }
         }
 
-        mUsbDeviceConnection.claimInterface(mUsbInterface, forceClaim);
+        mUsbDeviceConnection.claimInterface(mUsbInterface, true);
 
         //  Mensaje de configuración para el Device.
         int baudRate = 115200;
@@ -196,7 +170,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                 (byte) ((baudRate >> 24) & 0xff),
                 stopBitsByte,
                 parityBitesByte,
-                (byte) dataBits
+                dataBits
         };
 
         mUsbDeviceConnection.controlTransfer(UsbConstants.USB_TYPE_CLASS | 0x01, 0x20, 0, 0, msg, msg.length, 5000);
@@ -208,10 +182,6 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
         // 0x22 -> paramtro/mensaje SET_CONTROL_LINE_STATE (DTR)
         // 0x1  -> Activado.
         // Mas info: http://www.usb.org/developers/devclass_docs/usbcdc11.pdf
-
-        //  Ejecutar en un hilo
-        new UpdateHumidityTemperature().execute();
-
     }
 
     private void conectar() {
@@ -226,12 +196,10 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             mUsbDevice = deviceIterator.next();
             Log.d(TAG, getString(R.string.nombre)+ ": " + mUsbDevice.getDeviceName());
             Log.d(TAG, getString(R.string.protocolo)+ ": "+ mUsbDevice.getDeviceProtocol());
-            // Solicitamos el permiso al usuario.
-            mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
-            estadoConectividad=true;
-            conectado=true;
 
-            conectado();
+            // Solicitamos el permiso al usuario.
+            mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
 
         } else {
             Log.e(TAG, getString(R.string.dispositvoUSBNoDetec));
@@ -240,15 +208,15 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if (v == conecta){
+        if (v == but_conectar){
             conectar();
-        } else if (v == led) {
+        } else if (v == but_led) {
             int bufferMaxLength = epOUT.getMaxPacketSize();
             ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
             UsbRequest request = new UsbRequest(); // create an URB
             request.initialize(mUsbDeviceConnection, epOUT);
             String msg;
-            estadoLed=led.isChecked();
+            estadoLed= but_led.isChecked();
             if (estadoLed){
                 msg = "1";
             }else{
@@ -261,12 +229,11 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             boolean retval = request.queue(buffer, 1);
             if (mUsbDeviceConnection.requestWait() == request) {
                 Toast.makeText(this, getString(R.string.enviado), Toast.LENGTH_LONG).show();
-
             }
         }
     }
 
-    private class UpdateHumidityTemperature extends AsyncTask<String, String, String>{
+    private class UpdateSensors extends AsyncTask<String, String, String>{
 
         @Override
         protected String doInBackground(String... params) {
@@ -279,7 +246,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             UsbRequest inRequest = new UsbRequest();
             inRequest.initialize(mUsbDeviceConnection, epIN);
 
-            while(inRequest.queue(mBuffer, bufferMaxLength) == true){
+            while(inRequest.queue(mBuffer, bufferMaxLength)){
 
                 mUsbDeviceConnection.requestWait();
 
@@ -397,7 +364,7 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
                 else {
                     estadoLed=false;
                 }
-                led.setChecked(estadoLed);
+                but_led.setChecked(estadoLed);
             }
         }
 
