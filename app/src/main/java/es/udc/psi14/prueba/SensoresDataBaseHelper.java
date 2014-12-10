@@ -29,7 +29,7 @@ public class SensoresDataBaseHelper extends SQLiteOpenHelper {
             + COL_ID + " integer primary key autoincrement, "
             + COL_NOMBRE + " text not null, "
             + COL_IDENTIFICADOR + " text not null, "
-            + COL_MEDIDA + " integer not null, "
+            + COL_MEDIDA + " real not null, "
             + COL_FECHA + " integer not null );";
 
     //TODO: añandir coordenadas gps?

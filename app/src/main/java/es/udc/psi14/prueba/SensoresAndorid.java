@@ -350,42 +350,42 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
             if (!(values[0].isEmpty())){
                 tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
                 //TODO: ocuparse del identificador
-                sensor= new Sensor(Integer.parseInt(values[0]), "humedad", "", c.getTimeInMillis());
+                sensor= new Sensor(Float.parseFloat(values[0]), "humedad", "", c.getTimeInMillis());
                 long code = db.insertSensor(sensor);
                 if (code!=-1){
                 }
             }
             if (!(values[1].isEmpty())){
                 tv_temperatura.setText(getString(R.string.temperatura)+ ": " +  values[1]+" Cº");
-                sensor= new Sensor(Integer.parseInt(values[1]), "temperatura", "", c.getTimeInMillis());
+                sensor= new Sensor(Float.parseFloat(values[1]), "temperatura", "", c.getTimeInMillis());
                 long code = db.insertSensor(sensor);
                 if (code!=-1){
                 }
             }
             if (!(values[2].isEmpty())){
                 tv_altitud.setText(getString(R.string.altitud)+ ": " +  values[2]+" m");
-                sensor= new Sensor(Integer.parseInt(values[2]), "altitud", "", c.getTimeInMillis());
+                sensor= new Sensor(Float.parseFloat(values[2]), "altitud", "", c.getTimeInMillis());
                 long code = db.insertSensor(sensor);
                 if (code!=-1){
                 }
             }
             if (!(values[3].isEmpty())){
                 tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
-                sensor= new Sensor(Integer.parseInt(values[3]), "ruido", "", c.getTimeInMillis());
+                sensor= new Sensor(Float.parseFloat(values[3]), "ruido", "", c.getTimeInMillis());
                 long code = db.insertSensor(sensor);
                 if (code!=-1){
                 }
             }
             if (!(values[4].isEmpty())){
                 tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
-                sensor= new Sensor(Integer.parseInt(values[4]), "luminosidad", "", c.getTimeInMillis());
+                sensor= new Sensor(Float.parseFloat(values[4]), "luminosidad", "", c.getTimeInMillis());
                 long code = db.insertSensor(sensor);
                 if (code!=-1){
                 }
             }
             if (!(values[5].isEmpty())){
                 tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
-                sensor= new Sensor(Integer.parseInt(values[5]), "presion", "", c.getTimeInMillis());
+                sensor= new Sensor(Float.parseFloat(values[5]), "presion", "", c.getTimeInMillis());
                 long code = db.insertSensor(sensor);
                 if (code!=-1){
                 }
