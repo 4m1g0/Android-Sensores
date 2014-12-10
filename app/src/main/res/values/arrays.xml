@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="NombreSensoresDefecto">
+        <item name="temperatura">Temperatura</item>
+        <item name="humedad">Humedad</item>
+        <item name="altitud">Altitud</item>
+        <item name="ruido">Ruido</item>
+        <item name="luminosidad">Luminosidad</item>
+        <item name="presion">Presión</item>
+    </string-array>
+    <string-array name="IdentificadorSensoresDefecto">
+        <item name="temperatura">T</item>
+        <item name="humedad">H</item>
+        <item name="altitud">A</item>
+        <item name="ruido">N</item>
+        <item name="luminosidad">L</item>
+        <item name="presion">P</item>
+    </string-array>
+</resources>

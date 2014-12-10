@@ -33,6 +33,7 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(DATABASE_CREATE);
+        Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES");
     }
 
     @Override
@@ -75,6 +76,12 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     public Cursor getSensores() {
         return getWritableDatabase().query(TABLE_NOMBRE, null, null, null,
                 null,null, null);
+    }
+
+    private void inicializar(){
+        //String[] array = getResources().getStringArray(R.array.updateInterval);
+        //insertSensor();
+
     }
 
     //TODO: Obtener sesnores en un intervalo de tiempo

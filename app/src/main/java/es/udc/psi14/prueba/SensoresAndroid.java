@@ -28,7 +28,7 @@ import java.util.Iterator;
 
 public class SensoresAndroid extends Activity implements View.OnClickListener{
 
-    private static final String TAG = SensoresAndroid.class.getName();
+    public static final String TAG = SensoresAndroid.class.getName();
     private static final String CONECTIVIDAD ="estadoConectevidad";
 
     public static final String DB_NAME = "AndroidSensores.db";
@@ -38,7 +38,9 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     Button but_conectar;
     Switch but_led;
     boolean estadoLed, permissionGranted, conectado;
-    SensorValueDataBaseHelper db;
+    SensorValueDataBaseHelper dbValues;
+    SensorTemplateDataBaseHelper dbTemplate;
+
 
 
     TextView tv_temperatura, tv_humedad, tv_altitud, tv_ruido, tv_luminusidad, tv_presion;
@@ -104,7 +106,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         tv_altitud = (TextView) findViewById(R.id.tv_altitud);
         tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
         tv_presion =(TextView) findViewById(R.id.tv_presion);
-        db=new SensorValueDataBaseHelper(this);
+        dbValues=new SensorValueDataBaseHelper(this);
+        dbTemplate=new SensorTemplateDataBaseHelper(this);
 
         but_conectar = (Button) findViewById(R.id.conectar);
         but_conectar.setOnClickListener(this);
@@ -317,42 +320,42 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
                 //TODO: ocuparse del identificador
                 sensorValue = new SensorValue(Float.parseFloat(values[0]), 2, c.getTimeInMillis());
-                long code = db.insertSensor(sensorValue);
+                long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
                 }
             }
             if (!(values[1].isEmpty())){
                 tv_temperatura.setText(getString(R.string.temperatura)+ ": " +  values[1]+" Cº");
                 sensorValue = new SensorValue(Float.parseFloat(values[1]), 2, c.getTimeInMillis());
-                long code = db.insertSensor(sensorValue);
+                long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
                 }
             }
             if (!(values[2].isEmpty())){
                 tv_altitud.setText(getString(R.string.altitud)+ ": " +  values[2]+" m");
                 sensorValue = new SensorValue(Float.parseFloat(values[2]), 2, c.getTimeInMillis());
-                long code = db.insertSensor(sensorValue);
+                long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
                 }
             }
             if (!(values[3].isEmpty())){
                 tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
                 sensorValue = new SensorValue(Float.parseFloat(values[3]), 2, c.getTimeInMillis());
-                long code = db.insertSensor(sensorValue);
+                long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
                 }
             }
             if (!(values[4].isEmpty())){
                 tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
                 sensorValue = new SensorValue(Float.parseFloat(values[4]), 2, c.getTimeInMillis());
-                long code = db.insertSensor(sensorValue);
+                long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
                 }
             }
             if (!(values[5].isEmpty())){
                 tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
                 sensorValue = new SensorValue(Float.parseFloat(values[5]), 2, c.getTimeInMillis());
-                long code = db.insertSensor(sensorValue);
+                long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
                 }
             }
