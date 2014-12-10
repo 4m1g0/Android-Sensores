@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.util.Calendar;
@@ -227,9 +226,6 @@ public class SensoresAndorid extends Activity implements View.OnClickListener{
 
             //queue the outbound request
             boolean retval = request.queue(buffer, 1);
-            if (mUsbDeviceConnection.requestWait() == request) {
-                Toast.makeText(this, getString(R.string.enviado), Toast.LENGTH_LONG).show();
-            }
         }
     }
 
