@@ -17,6 +17,7 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     private String[] unidades;
     private static final String DB_NAME = "SensorTemplate.db";
     private static final int DB_VERSION = 2;
+    private boolean ini;
 
 
 
@@ -38,13 +39,15 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
         nombres = context.getResources().getStringArray(R.array.NombreSensoresDefecto);
         identificadores = context.getResources().getStringArray(R.array.IdentificadorSensoresDefecto);
         unidades = context.getResources().getStringArray(R.array.UnidadesSensoresDefecto);
+        ini=false;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(DATABASE_CREATE);
         Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES");
-        inicializar();
+        ini=true;
+        //inicializar();
     }
 
     @Override
@@ -61,11 +64,11 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
 
 
 
-    public long insertSensor(SensorTemplate sensorValue) {
+    public long insertSensor(SensorTemplate sensorTemplate) {
         ContentValues cv = new ContentValues();
-        cv.put(COL_IDENTIFICADOR, sensorValue.getIdentificador());
-        cv.put(COL_NOMBRE, sensorValue.getNombre());
-        cv.put(COL_UNIDADES, sensorValue.getUnidades());
+        cv.put(COL_IDENTIFICADOR, sensorTemplate.getIdentificador());
+        cv.put(COL_NOMBRE, sensorTemplate.getNombre());
+        cv.put(COL_UNIDADES, sensorTemplate.getUnidades());
 
         return getWritableDatabase().insert(TABLE_NOMBRE, null, cv);
     }
@@ -74,26 +77,30 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
         getWritableDatabase().delete(TABLE_NOMBRE, COL_ID + "=?", new String[]
                 { String.valueOf(id) });
     }
-    public void updateSensor(SensorTemplate sensorValue) {
-        long idNot = sensorValue.getId();
+    public void updateSensor(SensorTemplate sensorTemplate) {
+        long idNot = sensorTemplate.getId();
         ContentValues cv = new ContentValues();
-        cv.put(COL_IDENTIFICADOR, sensorValue.getIdentificador());
-        cv.put(COL_NOMBRE, sensorValue.getNombre());
-        cv.put(COL_UNIDADES, sensorValue.getUnidades());
+        cv.put(COL_IDENTIFICADOR, sensorTemplate.getIdentificador());
+        cv.put(COL_NOMBRE, sensorTemplate.getNombre());
+        cv.put(COL_UNIDADES, sensorTemplate.getUnidades());
 
         getWritableDatabase().update(TABLE_NOMBRE,cv,COL_ID+" = "+idNot,null);
     }
 
     public Cursor getSensores() {
+        if (ini){
+            inicializar();
+        }
         return getWritableDatabase().query(TABLE_NOMBRE, null, null, null,
                 null,null, null);
     }
 
     private void inicializar(){
         for(int i=0; i<nombres.length; i++){
-            insertSensor(new SensorTemplate(nombres[i],unidades[i],identificadores[i]));
-            Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES");
+            SensorTemplate sensor=new SensorTemplate(nombres[i],unidades[i],identificadores[i]);
+            long ident=insertSensor(sensor);
         }
+        ini=false;
 
     }
 

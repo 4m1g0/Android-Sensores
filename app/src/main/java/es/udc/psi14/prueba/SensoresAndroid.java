@@ -42,7 +42,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     SensorValueDataBaseHelper dbValues;
     SensorTemplateDataBaseHelper dbTemplate;
 
-
+    private int vecesActualizado;
 
     TextView tv_temperatura, tv_humedad, tv_altitud, tv_ruido, tv_luminusidad, tv_presion;
 
@@ -109,27 +109,12 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
         tv_presion =(TextView) findViewById(R.id.tv_presion);
 
-
         dbValues=new SensorValueDataBaseHelper(this);
         dbTemplate=new SensorTemplateDataBaseHelper(this);
 
-        sensores= new ArrayList<SensorTemplate>();
-        Cursor templates=dbTemplate.getSensores();
-        if (templates.moveToFirst()) {
-            for (templates.moveToFirst(); !templates.isAfterLast(); templates.moveToNext()) {
-                SensorTemplate sensorTemplate= new SensorTemplate(
-                        templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_NOMBRE))
-                        ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_UNIDADES))
-                        ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_IDENTIFICADOR)),
-                        templates.getLong(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_ID)));
+        sensores= cargaTemplates();
 
-                Toast.makeText(this, sensorTemplate.toString(), Toast.LENGTH_LONG).show();
-                sensores.add(sensorTemplate);
-            }
-            if (!templates.isClosed()) {
-                templates.close();
-            }
-        }
+        vecesActualizado=0;
 
         but_conectar = (Button) findViewById(R.id.conectar);
         but_conectar.setOnClickListener(this);
@@ -257,6 +242,29 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         }
     }
 
+    private ArrayList<SensorTemplate> cargaTemplates(){
+
+        ArrayList<SensorTemplate> sensores= new ArrayList<SensorTemplate>();
+        Cursor templates=dbTemplate.getSensores();
+        if (templates.moveToFirst()) {
+            for (templates.moveToFirst(); !templates.isAfterLast(); templates.moveToNext()) {
+                SensorTemplate sensorTemplate= new SensorTemplate(
+                        templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_NOMBRE))
+                        ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_UNIDADES))
+                        ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_IDENTIFICADOR)),
+                        templates.getLong(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_ID)));
+
+                Toast.makeText(this, sensorTemplate.toString(), Toast.LENGTH_LONG).show();
+                sensores.add(sensorTemplate);
+            }
+            if (!templates.isClosed()) {
+                templates.close();
+            }
+        }
+
+        return sensores;
+    }
+
     private class UpdateSensors extends AsyncTask<String, String, String>{
 
         @Override
@@ -275,13 +283,17 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 mUsbDeviceConnection.requestWait();
 
                 try {
-
+                    ArrayList<String> salida= new ArrayList<String>();
+                    salida.add("1");
+                    salida.add("14");
                     // Recogemos los datos que recibimos en un
                     line = line + new String(mBuffer.array(), "UTF-8").trim();
 
                     if (line.length()>0){
                         //Toast.makeText(SensoresAndorid.this, line, Toast.LENGTH_LONG).show();
                         String[] msg= (line.split(";"));
+
+
                         String temperature="";
                         String humidity="";
 
@@ -294,6 +306,16 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         for(int i=0; i<msg.length; i++){
                             String[] medida = msg[i].split(":");
                             //String[] medida = msg[0].split(":");
+                            SensorTemplate[] arraySensores = new SensorTemplate[sensores.size()];
+                            arraySensores=sensores.toArray(arraySensores);
+                            for(int j=0; j<arraySensores.length; j++){
+                                if (medida[0].equals(arraySensores[j].getIdentificador()) ) {
+                                    salida.add(j+"");
+                                    salida.add(medida[1]);
+                                }
+                            }
+
+                            /*
                             if (medida[0].equals("LED")){
                                 confLed=medida[1];
                             }
@@ -316,10 +338,13 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                             if (medida[0].equals("A")){
                                 altitud=medida[1];
                             }
+                            */
                         }
                         //  Actualizamos el GUI
-                        publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
-
+                        //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
+                        String[] salidaAux = new String[salida.size()];
+                        salidaAux=sensores.toArray(salidaAux);
+                        publishProgress(salidaAux);
                         line = "";
 
                     }
@@ -336,11 +361,29 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             SensorValue sensorValue;
+            String msg="";
+            Log.d(TAG, values.length+" :"+values[0]);
+            Calendar c = Calendar.getInstance();
+            for(int i=0; i<values.length; i=i+2){
 
+                if (!(values[i].isEmpty())){
+                    SensorTemplate sensor= sensores.get(Integer.parseInt(values[i]));
+                    sensorValue = new SensorValue(Float.parseFloat(values[i+1]), sensor.getIdentificador(), c.getTimeInMillis());
+                    long code = dbValues.insertSensor(sensorValue);
+                    msg=msg + sensor.getNombre() + ": " + values[i+1] + " " + sensor.getUnidades() + "\n";
+                    if (code!=-1){
+                    }
+                }
+
+            }
+
+            tv_temperatura.setText(vecesActualizado+"");
+            tv_humedad.setText(msg);
+
+            /*
             Calendar c = Calendar.getInstance();
             if (!(values[0].isEmpty())){
                 tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
-                //TODO: ocuparse del identificador
                 sensorValue = new SensorValue(Float.parseFloat(values[0]), 2, c.getTimeInMillis());
                 long code = dbValues.insertSensor(sensorValue);
                 if (code!=-1){
@@ -390,6 +433,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 }
                 but_led.setChecked(estadoLed);
             }
+            */
         }
 
     }

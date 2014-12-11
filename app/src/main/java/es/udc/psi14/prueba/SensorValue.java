@@ -5,19 +5,19 @@ package es.udc.psi14.prueba;
  */
 public class SensorValue {
     private float medida;
-    private long identificador;
+    private String identificador;
     private long id, fecha;
 
 
     //TODO: añandir coordenadas gps?
 
-    public SensorValue(float medida, long identificador, long fecha){
+    public SensorValue(float medida, String identificador, long fecha){
         this.medida=medida;
         this.identificador=identificador;
         this.fecha=fecha;
     }
 
-    public SensorValue(float medida, long identificador, long fecha, long id){
+    public SensorValue(float medida, String identificador, long fecha, long id){
         this.medida=medida;
         this.identificador=identificador;
         this.fecha=fecha;
@@ -28,7 +28,7 @@ public class SensorValue {
         this.medida=medida;
     }
 
-    public void setIdentificador(long identificador){
+    public void setIdentificador(String identificador){
         this.identificador=identificador;
     }
 
@@ -44,7 +44,7 @@ public class SensorValue {
         return medida;
     }
 
-    public long getIdentificador(){
+    public String getIdentificador(){
         return identificador;
     }
 

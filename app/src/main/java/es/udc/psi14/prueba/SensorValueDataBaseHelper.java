@@ -24,7 +24,7 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
 
     String DATABASE_CREATE = "create table " + TABLE_NOMBRE + " ( "
             + COL_ID + " integer primary key autoincrement, "
-            + COL_IDENTIFICADOR + " integer not null, "
+            + COL_IDENTIFICADOR + " text not null, "
             + COL_MEDIDA + " real not null, "
             + COL_FECHA + " integer not null );";
 
@@ -52,7 +52,7 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
 
     public Cursor getNSensor (int N, String sensor){
         String[] campos = new String[] {COL_MEDIDA, COL_FECHA};
-        String[] args = new String[] {"sensor"};
+        String[] args = new String[] {sensor};
         return getWritableDatabase().query(TABLE_NOMBRE, campos, COL_IDENTIFICADOR+"=?", args, null,null,COL_ID+" DESC" , String.valueOf(N));
     }
 
@@ -65,7 +65,7 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
         return getWritableDatabase().insert(TABLE_NOMBRE, null, cv);
     }
 
-    public void deleteSensor(long id) {
+    public void deleteValue(long id) {
         getWritableDatabase().delete(TABLE_NOMBRE, COL_ID + "=?", new String[]
                 { String.valueOf(id) });
     }
@@ -79,7 +79,7 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
         getWritableDatabase().update(TABLE_NOMBRE,cv,COL_ID+" = "+idNot,null);
     }
 
-    public Cursor getSesnores() {
+    public Cursor getSensores() {
         return getWritableDatabase().query(TABLE_NOMBRE, null, null, null,
                 null,null, null);
     }
