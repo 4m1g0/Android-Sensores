@@ -12,11 +12,10 @@ import android.util.Log;
  */
 public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
 
-    public SensorValueDataBaseHelper(Context context) {
-        super(context, SensoresAndroid.DB_NAME, null, SensoresAndroid.DB_VERSION);
-    }
 
 
+    private static final String DB_NAME = "SensorValues.db";
+    private static final int DB_VERSION = 1;
     public static final String TABLE_NOMBRE = "tabla_Values";
     public static final String COL_ID = "_id"; // critical for Adapters
     public static final String COL_IDENTIFICADOR = "identificador";
@@ -29,7 +28,10 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
             + COL_MEDIDA + " real not null, "
             + COL_FECHA + " integer not null );";
 
-    //TODO: añandir coordenadas gps?
+
+    public SensorValueDataBaseHelper(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
+    }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
@@ -82,7 +84,4 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
                 null,null, null);
     }
 
-    //TODO: Obtener sesnores en un intervalo de tiempo
-
-    //TODO: Actualizar el nombre o identificador de un sensor
 }

@@ -16,4 +16,12 @@
         <item name="luminosidad">L</item>
         <item name="presion">P</item>
     </string-array>
+    <string-array name="UnidadesSensoresDefecto">
+        <item name="temperatura">Cº</item>
+        <item name="humedad">%</item>
+        <item name="altitud">m</item>
+        <item name="ruido">db</item>
+        <item name="luminosidad">%</item>
+        <item name="presion">atm</item>
+    </string-array>
 </resources>

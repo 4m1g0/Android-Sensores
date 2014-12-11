@@ -31,8 +31,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     public static final String TAG = SensoresAndroid.class.getName();
     private static final String CONECTIVIDAD ="estadoConectevidad";
 
-    public static final String DB_NAME = "AndroidSensores.db";
-    public static final int DB_VERSION = 1;
 
     //  Variables GUI
     Button but_conectar;

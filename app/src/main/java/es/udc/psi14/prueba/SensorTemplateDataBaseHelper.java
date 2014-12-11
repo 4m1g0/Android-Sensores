@@ -12,9 +12,13 @@ import android.util.Log;
  */
 public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
 
-    public SensorTemplateDataBaseHelper(Context context) {
-        super(context, SensoresAndroid.DB_NAME, null, SensoresAndroid.DB_VERSION);
-    }
+    private String[] nombres;
+    private String[] identificadores;
+    private String[] unidades;
+    private static final String DB_NAME = "SensorTemplate.db";
+    private static final int DB_VERSION = 2;
+
+
 
     public static final String TABLE_NOMBRE = "tabla_Templates";
     public static final String COL_ID = "_id"; // critical for Adapters
@@ -24,16 +28,23 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
 
     String DATABASE_CREATE = "create table " + TABLE_NOMBRE + " ( "
             + COL_ID + " integer primary key autoincrement, "
-            + COL_IDENTIFICADOR + " integer not null, "
+            + COL_IDENTIFICADOR + " text not null, "
             + COL_NOMBRE + " text not null, "
             + COL_UNIDADES + " text not null );";
 
-    //TODO: añandir coordenadas gps?
+
+    public SensorTemplateDataBaseHelper(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
+        nombres = context.getResources().getStringArray(R.array.NombreSensoresDefecto);
+        identificadores = context.getResources().getStringArray(R.array.IdentificadorSensoresDefecto);
+        unidades = context.getResources().getStringArray(R.array.UnidadesSensoresDefecto);
+    }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(DATABASE_CREATE);
         Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES");
+        inicializar();
     }
 
     @Override
@@ -79,12 +90,10 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     }
 
     private void inicializar(){
-        //String[] array = getResources().getStringArray(R.array.updateInterval);
-        //insertSensor();
+        for(int i=0; i<nombres.length; i++){
+            insertSensor(new SensorTemplate(nombres[i],unidades[i],identificadores[i]));
+        }
 
     }
 
-    //TODO: Obtener sesnores en un intervalo de tiempo
-
-    //TODO: Actualizar el nombre o identificador de un sensor
 }
