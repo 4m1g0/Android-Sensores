@@ -22,6 +22,12 @@ public class SensorTemplate{
         this.id=id;
     }
 
+
+    @Override
+    public String toString() {
+        return "Sensor " + nombre + " con identificador " + identificador + " y unidades: " + unidades;
+    }
+
     public void setNombre(String nombre){
         this.nombre=nombre;
     }

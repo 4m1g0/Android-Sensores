@@ -92,6 +92,7 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     private void inicializar(){
         for(int i=0; i<nombres.length; i++){
             insertSensor(new SensorTemplate(nombres[i],unidades[i],identificadores[i]));
+            Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES");
         }
 
     }

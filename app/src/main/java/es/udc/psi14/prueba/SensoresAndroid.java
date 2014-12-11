@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -20,8 +21,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +53,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     UsbDeviceConnection mUsbDeviceConnection;
     UsbEndpoint epIN = null;
     UsbEndpoint epOUT = null;
+    ArrayList<SensorTemplate> sensores;
 
     //  Al conectar a un dispositvo USB se solicita un permiso al usuario
     // este broadcast se encarga de recoger la respuesta del usuario.
@@ -104,8 +108,28 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         tv_altitud = (TextView) findViewById(R.id.tv_altitud);
         tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
         tv_presion =(TextView) findViewById(R.id.tv_presion);
+
+
         dbValues=new SensorValueDataBaseHelper(this);
         dbTemplate=new SensorTemplateDataBaseHelper(this);
+
+        sensores= new ArrayList<SensorTemplate>();
+        Cursor templates=dbTemplate.getSensores();
+        if (templates.moveToFirst()) {
+            for (templates.moveToFirst(); !templates.isAfterLast(); templates.moveToNext()) {
+                SensorTemplate sensorTemplate= new SensorTemplate(
+                        templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_NOMBRE))
+                        ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_UNIDADES))
+                        ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_IDENTIFICADOR)),
+                        templates.getLong(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_ID)));
+
+                Toast.makeText(this, sensorTemplate.toString(), Toast.LENGTH_LONG).show();
+                sensores.add(sensorTemplate);
+            }
+            if (!templates.isClosed()) {
+                templates.close();
+            }
+        }
 
         but_conectar = (Button) findViewById(R.id.conectar);
         but_conectar.setOnClickListener(this);
