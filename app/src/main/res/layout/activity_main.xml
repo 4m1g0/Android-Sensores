@@ -52,10 +52,22 @@
 
 
     <Button
-        android:id="@+id/conectar"
+        android:id="@+id/but_iniSesnores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/inicializar" />
+
+    <Button
+        android:id="@+id/but_conectar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/conectar" />
+
+    <Button
+        android:id="@+id/but_addSensor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/addSensor" />
 
     <Switch
         android:layout_width="wrap_content"

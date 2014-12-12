@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
 
     //  Variables GUI
-    Button but_conectar;
+    Button but_conectar, but_iniSesnores, but_addSensor;
     Switch but_led;
     boolean estadoLed, permissionGranted, conectado;
     SensorValueDataBaseHelper dbValues;
@@ -109,6 +108,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
         tv_presion =(TextView) findViewById(R.id.tv_presion);
 
+
         dbValues=new SensorValueDataBaseHelper(this);
         dbTemplate=new SensorTemplateDataBaseHelper(this);
 
@@ -116,8 +116,11 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
         vecesActualizado=0;
 
-        but_conectar = (Button) findViewById(R.id.conectar);
+        but_conectar = (Button) findViewById(R.id.but_conectar);
         but_conectar.setOnClickListener(this);
+        but_iniSesnores = (Button) findViewById(R.id.but_iniSesnores);
+        but_addSensor = (Button) findViewById(R.id.but_addSensor);
+        but_iniSesnores.setOnClickListener(this);
         but_led = (Switch) findViewById(R.id.led);
         but_led.setOnClickListener(this);
     }
@@ -220,8 +223,12 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if (v == but_conectar){
+        if (v == but_conectar) {
             conectar();
+        }else if(v==but_iniSesnores){
+            dbTemplate.inicializar();
+            but_iniSesnores.setVisibility(View.GONE);
+
         } else if (v == but_led) {
             int bufferMaxLength = epOUT.getMaxPacketSize();
             ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
@@ -246,15 +253,19 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
         ArrayList<SensorTemplate> sensores= new ArrayList<SensorTemplate>();
         Cursor templates=dbTemplate.getSensores();
+        Log.d(SensoresAndroid.TAG, "Cargando TEMPLATES");
         if (templates.moveToFirst()) {
+            Log.d(SensoresAndroid.TAG, "Cargando TEMPLATES");
             for (templates.moveToFirst(); !templates.isAfterLast(); templates.moveToNext()) {
+
                 SensorTemplate sensorTemplate= new SensorTemplate(
                         templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_NOMBRE))
                         ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_UNIDADES))
                         ,templates.getString(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_IDENTIFICADOR)),
                         templates.getLong(templates.getColumnIndex(SensorTemplateDataBaseHelper.COL_ID)));
 
-                Toast.makeText(this, sensorTemplate.toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, sensorTemplate.toString(), Toast.LENGTH_LONG).show();
+                Log.d(SensoresAndroid.TAG, "Cargando TEMPLATE: "+sensorTemplate.toString());
                 sensores.add(sensorTemplate);
             }
             if (!templates.isClosed()) {
@@ -283,9 +294,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 mUsbDeviceConnection.requestWait();
 
                 try {
-                    ArrayList<String> salida= new ArrayList<String>();
-                    salida.add("1");
-                    salida.add("14");
+                    String salida= "";
                     // Recogemos los datos que recibimos en un
                     line = line + new String(mBuffer.array(), "UTF-8").trim();
 
@@ -310,8 +319,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                             arraySensores=sensores.toArray(arraySensores);
                             for(int j=0; j<arraySensores.length; j++){
                                 if (medida[0].equals(arraySensores[j].getIdentificador()) ) {
-                                    salida.add(j+"");
-                                    salida.add(medida[1]);
+                                    salida=salida+j+";";
+                                    salida=salida+medida[1]+";";
                                 }
                             }
 
@@ -342,9 +351,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         }
                         //  Actualizamos el GUI
                         //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
-                        String[] salidaAux = new String[salida.size()];
-                        salidaAux=sensores.toArray(salidaAux);
-                        publishProgress(salidaAux);
+                        publishProgress(salida);
                         line = "";
 
                     }
@@ -362,68 +369,149 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             super.onProgressUpdate(values);
             SensorValue sensorValue;
             String msg="";
-            Log.d(TAG, values.length+" :"+values[0]);
+            String[] procesar = values[0].split(";");
+            Log.d(TAG, values.length+" :"+values[0]+"Nº=DATOS: " + procesar.length);
             Calendar c = Calendar.getInstance();
-            for(int i=0; i<values.length; i=i+2){
+            for(int i=0; i<procesar.length; i+=2){
 
-                if (!(values[i].isEmpty())){
-                    SensorTemplate sensor= sensores.get(Integer.parseInt(values[i]));
-                    sensorValue = new SensorValue(Float.parseFloat(values[i+1]), sensor.getIdentificador(), c.getTimeInMillis());
+                if (!(procesar[i].isEmpty())){
+                    Log.d(TAG,"Procesando: "+procesar[i]+" "+procesar[i+1]);
+                    SensorTemplate sensor= sensores.get(Integer.parseInt(procesar[i]));
+                    sensorValue = new SensorValue(Float.parseFloat(procesar[i+1]), sensor.getIdentificador(), c.getTimeInMillis());
                     long code = dbValues.insertSensor(sensorValue);
-                    msg=msg + sensor.getNombre() + ": " + values[i+1] + " " + sensor.getUnidades() + "\n";
+                    /*msg=msg + sensor.getNombre() + ": " + procesar
+                            [i+1] + " " + sensor.getUnidades() + "\n";*/
                     if (code!=-1){
                     }
                 }
 
             }
 
+            /*
+            vecesActualizado++;
             tv_temperatura.setText(vecesActualizado+"");
             tv_humedad.setText(msg);
+            */
+
+
+
+            Cursor valores=dbValues.getNSensor(1,"H");
+            Log.d(SensoresAndroid.TAG, "Cargando Humedad");
+            if (valores.moveToFirst()) {
+                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
+
+                    SensorValue sensorvalue= new SensorValue(
+                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
+                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
+                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
+                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
+
+                    tv_humedad.setText(getString(R.string.humedad)+ ": " + sensorvalue.getMedida()+" %");
+                }
+                if (!valores.isClosed()) {
+                    valores.close();
+                }
+
+            }
+
+
+
+            valores=dbValues.getNSensor(1,"T");
+            Log.d(SensoresAndroid.TAG, "Cargando temperatura");
+            if (valores.moveToFirst()) {
+                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
+
+
+                    SensorValue sensorvalue= new SensorValue(
+                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
+                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
+                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
+                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
+
+                    tv_temperatura.setText(getString(R.string.temperatura)+ ": " + sensorvalue.getMedida()+" Cº");
+                }
+                if (!valores.isClosed()) {
+                    valores.close();
+                }
+
+            }
+            valores=dbValues.getNSensor(1,"A");
+            Log.d(SensoresAndroid.TAG, "Cargando Altitud");
+            if (valores.moveToFirst()) {
+                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
+
+                    SensorValue sensorvalue= new SensorValue(
+                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
+                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
+                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
+                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
+
+                    tv_altitud.setText(getString(R.string.altitud)+ ": " + sensorvalue.getMedida()+" m");
+                }
+                if (!valores.isClosed()) {
+                    valores.close();
+                }
+
+            }
+
+            valores=dbValues.getNSensor(1,"N");
+            Log.d(SensoresAndroid.TAG, "Cargando Ruido");
+            if (valores.moveToFirst()) {
+                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
+
+                    SensorValue sensorvalue = new SensorValue(
+                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
+                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
+                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
+                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
+
+                    tv_ruido.setText(getString(R.string.ruido) + ": " + sensorvalue.getMedida() + " db");
+                }
+                if (!valores.isClosed()) {
+                    valores.close();
+                }
+
+            }
+
+            valores=dbValues.getNSensor(1,"L");
+            Log.d(SensoresAndroid.TAG, "Cargando Luminusidad");
+            if (valores.moveToFirst()) {
+                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
+
+                    SensorValue sensorvalue = new SensorValue(
+                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
+                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
+                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
+                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
+
+                    tv_luminusidad.setText(getString(R.string.luminosidad) + ": " + sensorvalue.getMedida() + " %");
+                }
+                if (!valores.isClosed()) {
+                    valores.close();
+                }
+
+            }
+
+            valores=dbValues.getNSensor(1,"P");
+            Log.d(SensoresAndroid.TAG, "Cargando Presion");
+            if (valores.moveToFirst()) {
+                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
+
+                    SensorValue sensorvalue = new SensorValue(
+                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
+                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
+                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
+                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
+
+                    tv_presion.setText(getString(R.string.presion) + ": " + sensorvalue.getMedida() + " atm");
+                }
+                if (!valores.isClosed()) {
+                    valores.close();
+                }
+
+            }
 
             /*
-            Calendar c = Calendar.getInstance();
-            if (!(values[0].isEmpty())){
-                tv_humedad.setText(getString(R.string.humedad)+ ": " + values[0]+" %");
-                sensorValue = new SensorValue(Float.parseFloat(values[0]), 2, c.getTimeInMillis());
-                long code = dbValues.insertSensor(sensorValue);
-                if (code!=-1){
-                }
-            }
-            if (!(values[1].isEmpty())){
-                tv_temperatura.setText(getString(R.string.temperatura)+ ": " +  values[1]+" Cº");
-                sensorValue = new SensorValue(Float.parseFloat(values[1]), 2, c.getTimeInMillis());
-                long code = dbValues.insertSensor(sensorValue);
-                if (code!=-1){
-                }
-            }
-            if (!(values[2].isEmpty())){
-                tv_altitud.setText(getString(R.string.altitud)+ ": " +  values[2]+" m");
-                sensorValue = new SensorValue(Float.parseFloat(values[2]), 2, c.getTimeInMillis());
-                long code = dbValues.insertSensor(sensorValue);
-                if (code!=-1){
-                }
-            }
-            if (!(values[3].isEmpty())){
-                tv_ruido.setText(getString(R.string.ruido)+ ": " +  values[3]+" db");
-                sensorValue = new SensorValue(Float.parseFloat(values[3]), 2, c.getTimeInMillis());
-                long code = dbValues.insertSensor(sensorValue);
-                if (code!=-1){
-                }
-            }
-            if (!(values[4].isEmpty())){
-                tv_luminusidad.setText(getString(R.string.luminosidad)+ ": " +  values[4]+" Cd");
-                sensorValue = new SensorValue(Float.parseFloat(values[4]), 2, c.getTimeInMillis());
-                long code = dbValues.insertSensor(sensorValue);
-                if (code!=-1){
-                }
-            }
-            if (!(values[5].isEmpty())){
-                tv_presion.setText(getString(R.string.presion)+ ": " +  values[5]+" atm");
-                sensorValue = new SensorValue(Float.parseFloat(values[5]), 2, c.getTimeInMillis());
-                long code = dbValues.insertSensor(sensorValue);
-                if (code!=-1){
-                }
-            }
             if (!(values[6].isEmpty())) {
                 if (values[6].equals("H")){
                     estadoLed=true;
@@ -434,6 +522,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 but_led.setChecked(estadoLed);
             }
             */
+
         }
 
     }

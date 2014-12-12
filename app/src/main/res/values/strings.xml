@@ -21,5 +21,7 @@
     <string name="dispositvoUSBNoDetec">Dispositvo USB no detectado</string>
     <string name="enviado">Enviado</string>
     <string name="lineaFinal">Encontrada final de linea</string>
+    <string name="inicializar">iniciaizar</string>
+    <string name="addSensor">Añadir sensor</string>
 
 </resources>

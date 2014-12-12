@@ -39,13 +39,11 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
         nombres = context.getResources().getStringArray(R.array.NombreSensoresDefecto);
         identificadores = context.getResources().getStringArray(R.array.IdentificadorSensoresDefecto);
         unidades = context.getResources().getStringArray(R.array.UnidadesSensoresDefecto);
-        ini=false;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(DATABASE_CREATE);
-        Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES");
         ini=true;
         //inicializar();
     }
@@ -88,17 +86,22 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getSensores() {
+        Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES cogiendo");
         if (ini){
-            inicializar();
+            Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES INI");
+            //inicializar();
         }
+        //inicializar();
         return getWritableDatabase().query(TABLE_NOMBRE, null, null, null,
                 null,null, null);
     }
 
-    private void inicializar(){
+    public void inicializar(){
+        Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES"+nombres);
         for(int i=0; i<nombres.length; i++){
             SensorTemplate sensor=new SensorTemplate(nombres[i],unidades[i],identificadores[i]);
             long ident=insertSensor(sensor);
+            Log.d(SensoresAndroid.TAG, "Introduciendo TEMPLATE:"+sensor.toString());
         }
         ini=false;
 
