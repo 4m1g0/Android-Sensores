@@ -120,6 +120,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         but_conectar.setOnClickListener(this);
         but_iniSesnores = (Button) findViewById(R.id.but_iniSesnores);
         but_addSensor = (Button) findViewById(R.id.but_addSensor);
+        but_addSensor.setOnClickListener(this);
         but_iniSesnores.setOnClickListener(this);
         but_led = (Switch) findViewById(R.id.led);
         but_led.setOnClickListener(this);
@@ -221,6 +222,18 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         }
     }
 
+    private void enviarMsg(String msg, UsbDeviceConnection mUsbDeviceConnection, UsbEndpoint epOUT){
+        int bufferMaxLength = epOUT.getMaxPacketSize();
+        ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
+        UsbRequest request = new UsbRequest(); // create an URB
+        request.initialize(mUsbDeviceConnection, epOUT);
+
+        buffer.put(msg.getBytes());
+
+        //queue the outbound request
+        boolean retval = request.queue(buffer, 1);
+    }
+
     @Override
     public void onClick(View v) {
         if (v == but_conectar) {
@@ -229,11 +242,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             dbTemplate.inicializar();
             but_iniSesnores.setVisibility(View.GONE);
 
-        } else if (v == but_led) {
-            int bufferMaxLength = epOUT.getMaxPacketSize();
-            ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
-            UsbRequest request = new UsbRequest(); // create an URB
-            request.initialize(mUsbDeviceConnection, epOUT);
+        }else if (v == but_led) {
             String msg;
             estadoLed= but_led.isChecked();
             if (estadoLed){
@@ -241,11 +250,11 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             }else{
                 msg = "0";
             }
+            enviarMsg(msg, mUsbDeviceConnection, epOUT);
 
-            buffer.put(msg.getBytes());
 
-            //queue the outbound request
-            boolean retval = request.queue(buffer, 1);
+        }else if (v== but_addSensor){
+
         }
     }
 
