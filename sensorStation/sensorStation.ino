@@ -65,6 +65,7 @@ EthernetServer server(4952);
 unsigned long loopTimer = 0, sensorsTimer=0, lcdTimer = 0;
 int SENSORS_TIME = 3000;
 #define LCD_TIME 5000
+#define TAMSTRING 15
 int lcdActual = 0;
 int encender = 0;
 int led = 13;
@@ -104,22 +105,29 @@ void loop()
      calculateHumidity();
      calculateNoise();
      
-     Serial.print("R:");
+     /*Serial.print("R:");
      Serial.print(random(0,255), DEC);
      Serial.println(";");
-     
+     */
+     Serial.println(tamanoMsg("R:" + random(0,255) + ";"),TAMSTRING )
+
+     /*
      Serial.print("C:");
      Serial.print(contador++, DEC);
      Serial.println(";");
-     
+     */
+
+     Serial.println(tamanoMsg("C:" + contador++ + ";"),TAMSTRING )
      
      
      
      
      if (encender == 0){
-       Serial.println("LED:L;");
+       //Serial.println("LED:L;");
+       Serial.println(tamanoMsg("LED:L;"),TAMSTRING )
      }else{
-       Serial.println("LED:H;");
+       //Serial.println("LED:H;");
+       Serial.println(tamanoMsg("LED:H;")TAMSTRING )
      }
   }
   
@@ -138,7 +146,6 @@ void loop()
             case 'S':
                 angle = Serial.parseInt();
                 myservo.write(constrain(angle, 0, 180));
-                Serial.println("test");
                 break;
             case 'T':
                 SENSORS_TIME = constrain(Serial.parseInt(), 1, 5000);
@@ -184,9 +191,19 @@ void loop()
 
 void calculateTemperature(){
   temperature = 2;//bmp085GetTemperature(bmp085ReadUT())/10;
-  Serial.print("T:");
+  /*Serial.print("T:");
   Serial.print(temperature, DEC);
   Serial.println(";");
+  */
+  Serial.println(tamanoMsg("T:" + temperature + ";"),TAMSTRING )
+}
+
+string tamanoMsg(string msg, int tam){
+    string salida = "";
+    for(int i; i<tam;i++){
+        salida= salida + " ";
+    }
+    return msg + salida;
 }
 
 void showTemperature(){
@@ -199,9 +216,11 @@ void showTemperature(){
 
 void calculatePressure(){
   pressure = 5;//bmp085GetPressure(bmp085ReadUP());
-  Serial.print("P:");
+  /*Serial.print("P:");
   Serial.print(pressure/100, DEC);
   Serial.println(";");
+  */
+  Serial.println(tamanoMsg("P:" + pressure/100 + ";"),TAMSTRING )
 }   
 
 void showPressure(){
@@ -214,9 +233,11 @@ void showPressure(){
 
 void calculateAltitude(){
   altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
-  Serial.print("A:");
+  /*Serial.print("A:");
   Serial.print(altitude, 2);
   Serial.println(";");
+  */
+  Serial.println(tamanoMsg("A:" + altitude + ";"),TAMSTRING )
 }
 
 void showAltitude(){ 
@@ -229,9 +250,11 @@ void showAltitude(){
 
 void calculateLuminosity(){
   luminosity=map(analogRead(LDR),0,1023,100,0);
-  Serial.print("L:");
+  /*Serial.print("L:");
   Serial.print(luminosity);
   Serial.println(";");
+  */
+  Serial.println(tamanoMsg("L:" + luminisity + ";"),TAMSTRING )
 }
 
 void showLuminosity(){
@@ -244,9 +267,11 @@ void showLuminosity(){
 
 void calculateHumidity(){
   humidity = dht112.read();
-  Serial.print("H:");
+  /*Serial.print("H:");
   Serial.print(humidity);
   Serial.println(";");
+  */
+  Serial.println(tamanoMsg("H:" + humidity + ";"),TAMSTRING )
 }
 
 void showHumidity(){
@@ -259,9 +284,11 @@ void showHumidity(){
 
 void calculateNoise(){
   noise=map(analogRead(NPIN),0,1023,0,100);  
-  Serial.print("N:");
+  /*Serial.print("N:");
   Serial.print(noise);
   Serial.println(";");
+  */
+  Serial.println(tamanoMsg("N:" + noise + ";"),TAMSTRING )
 }
 
 void showNoise(){
