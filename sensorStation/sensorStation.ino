@@ -70,6 +70,7 @@ int lcdActual = 0;
 int encender = 0;
 int led = 13;
 int contador=0;
+String string = "";
 
 void setup()
 {
@@ -109,7 +110,7 @@ void loop()
      Serial.print(random(0,255), DEC);
      Serial.println(";");
      */
-     Serial.println(tamanoMsg("R:" + random(0,255) + ";",TAMSTRING) )
+     Serial.println(tamanoMsg(string + "R:" + random(0,255) + ";",TAMSTRING));
 
      /*
      Serial.print("C:");
@@ -117,17 +118,17 @@ void loop()
      Serial.println(";");
      */
 
-     Serial.println(tamanoMsg("C:" + contador++ + ";",TAMSTRING) )
+     Serial.println(tamanoMsg(string + "C:" + contador++ + ";",TAMSTRING));
      
      
      
      
      if (encender == 0){
        //Serial.println("LED:L;");
-       Serial.println(tamanoMsg("LED:L;",TAMSTRING ))
+       Serial.println(tamanoMsg("LED:L;",TAMSTRING));
      }else{
        //Serial.println("LED:H;");
-       Serial.println(tamanoMsg("LED:H;"TAMSTRING) )
+       Serial.println(tamanoMsg("LED:H;",TAMSTRING));
      }
   }
   
@@ -195,13 +196,13 @@ void calculateTemperature(){
   Serial.print(temperature, DEC);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("T:" + temperature + ";",TAMSTRING ))
+  Serial.println(tamanoMsg(string + "T:" + temperature + ";",TAMSTRING));
 }
 
-string tamanoMsg(string msg, int tam){
-    string salida = "";
-    int final = tam -strlen(msg);
-    for(int i; i<tam;i++){
+String tamanoMsg(String msg, int tam){
+    String salida = "";
+    int final = tam - msg.length();
+    for(int i=0; i<final;i++){
         salida= salida + " ";
     }
     return msg + salida;
@@ -221,7 +222,7 @@ void calculatePressure(){
   Serial.print(pressure/100, DEC);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("P:" + pressure/100 + ";",TAMSTRING) )
+  Serial.println(tamanoMsg(string + "P:" + pressure/100 + ";",TAMSTRING) );
 }   
 
 void showPressure(){
@@ -238,7 +239,7 @@ void calculateAltitude(){
   Serial.print(altitude, 2);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("A:" + altitude + ";",TAMSTRING) )
+  Serial.println(tamanoMsg(string + "A:" + altitude + ";",TAMSTRING) );
 }
 
 void showAltitude(){ 
@@ -255,7 +256,7 @@ void calculateLuminosity(){
   Serial.print(luminosity);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("L:" + luminisity + ";",TAMSTRING) )
+  Serial.println(tamanoMsg(string + "L:" + luminosity + ";",TAMSTRING) );
 }
 
 void showLuminosity(){
@@ -272,7 +273,7 @@ void calculateHumidity(){
   Serial.print(humidity);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("H:" + humidity + ";",TAMSTRING) )
+  Serial.println(tamanoMsg(string + "H:" + humidity + ";",TAMSTRING) );
 }
 
 void showHumidity(){
@@ -289,7 +290,7 @@ void calculateNoise(){
   Serial.print(noise);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("N:" + noise + ";",TAMSTRING) )
+  Serial.println(tamanoMsg(string + "N:" + noise + ";",TAMSTRING) );
 }
 
 void showNoise(){
