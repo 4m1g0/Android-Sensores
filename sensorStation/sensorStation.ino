@@ -63,11 +63,12 @@ IPAddress subnet(255, 255, 255, 0);
 EthernetServer server(4952);
 
 unsigned long loopTimer = 0, sensorsTimer=0, lcdTimer = 0;
-#define SENSORS_TIME 1000
+int SENSORS_TIME = 3000;
 #define LCD_TIME 5000
 int lcdActual = 0;
 int encender = 0;
 int led = 13;
+int contador=0;
 
 void setup()
 {
@@ -102,6 +103,19 @@ void loop()
      calculateLuminosity();
      calculateHumidity();
      calculateNoise();
+     
+     Serial.print("R:");
+     Serial.print(random(0,255), DEC);
+     Serial.println(";");
+     
+     Serial.print("C:");
+     Serial.print(contador++, DEC);
+     Serial.println(";");
+     
+     
+     
+     
+     
      if (encender == 0){
        Serial.println("LED:L;");
      }else{
@@ -111,6 +125,7 @@ void loop()
   
   if (Serial.available() > 0){
        char command = Serial.read();
+       int angle;
        switch (command) {
             case 'L':
                 encender = Serial.parseInt();
@@ -121,9 +136,12 @@ void loop()
                 }
                 break;
             case 'S':
-                int angle = Serial.parseInt();
+                angle = Serial.parseInt();
                 myservo.write(constrain(angle, 0, 180));
                 Serial.println("test");
+                break;
+            case 'T':
+                SENSORS_TIME = constrain(Serial.parseInt(), 1, 5000);
                 break;
        }
        
