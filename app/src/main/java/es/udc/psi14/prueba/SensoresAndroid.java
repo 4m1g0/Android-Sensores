@@ -144,7 +144,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                enviarMsg(String.valueOf(angle), mUsbDeviceConnection, epOUT);
+                enviarMsg("S" + String.valueOf(angle), mUsbDeviceConnection, epOUT);
             }
         });
     }
