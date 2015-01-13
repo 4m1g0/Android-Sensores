@@ -28,10 +28,10 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -349,18 +349,27 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         @Override
         protected String doInBackground(String... params) {
 
-            String line="";
+            int s=1;
+        while(s==1){
+            String line = "";
 
-            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            ByteBuffer buffer = ByteBuffer.allocate(32);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             UsbRequest request = new UsbRequest();
             request.initialize(mUsbDeviceConnection, epIN);
-            request.queue(buffer, 4096);
+            request.queue(buffer, 32);
             String data = "";
             if (mUsbDeviceConnection.requestWait() == request) {
-                data = Arrays.toString(buffer.array());
+                try {
+                    data = new String(buffer.array(),"UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
             }
-            tv_temperatura.setText(data);
+
+
+            //tv_temperatura.setText("dasdasdasdasd");
 
             /*int bufferMaxLength=epIN.getMaxPacketSize();
             ByteBuffer mBuffer = ByteBuffer.allocate(bufferMaxLength);
@@ -371,19 +380,19 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             while(inRequest.queue(mBuffer, bufferMaxLength)){
 
 
-                mUsbDeviceConnection.requestWait();
+                mUsbDeviceConnection.requestWait();*/
 
                 try {
-                    tv_temperatura.setText(new String(mBuffer.array(), "UTF-8"));
+                    //tv_temperatura.setText(new String(mBuffer.array(), "UTF-8"));
                     String salida= "";
                     // Recogemos los datos que recibimos en un
-                    line = line + new String(mBuffer.array(), "UTF-8").trim();
+                    line =  data.trim();
 
                     if (line.length()>0){
                         //Toast.makeText(SensoresAndorid.this, line, Toast.LENGTH_LONG).show();
                         String[] msg= (line.split(";"));
 
-                        /*
+
                         //Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
                             String[] medida = msg[i].split(":");
@@ -399,10 +408,10 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                             }
 
 
-                        }*/
+                        }
                         //  Actualizamos el GUI
                         //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
-                        /*publishProgress(salida);
+                        publishProgress(salida);
                         line = "";
 
                     }
@@ -410,7 +419,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }*/
+            }
 
             return null;
         }
@@ -440,121 +449,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
             // FIXME: a partir de aqui ya esta implementado en el list view
 
-            /*Cursor valores=dbValues.getNSensor(1,"H");
-            Log.d(SensoresAndroid.TAG, "Cargando Humedad");
-            if (valores.moveToFirst()) {
-                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
-
-                    SensorValue sensorvalue= new SensorValue(
-                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
-                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
-                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
-                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
-
-                    tv_humedad.setText(getString(R.string.humedad)+ ": " + sensorvalue.getMedida()+" %");
-                }
-                if (!valores.isClosed()) {
-                    valores.close();
-                }
-
-            }
-
-
-
-            valores=dbValues.getNSensor(1,"T");
-            Log.d(SensoresAndroid.TAG, "Cargando temperatura");
-            if (valores.moveToFirst()) {
-                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
-
-
-                    SensorValue sensorvalue= new SensorValue(
-                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
-                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
-                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
-                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
-
-                    tv_temperatura.setText(getString(R.string.temperatura)+ ": " + sensorvalue.getMedida()+" Cº");
-                }
-                if (!valores.isClosed()) {
-                    valores.close();
-                }
-
-            }
-            valores=dbValues.getNSensor(1,"A");
-            Log.d(SensoresAndroid.TAG, "Cargando Altitud");
-            if (valores.moveToFirst()) {
-                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
-
-                    SensorValue sensorvalue= new SensorValue(
-                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
-                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
-                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
-                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
-
-                    tv_altitud.setText(getString(R.string.altitud)+ ": " + sensorvalue.getMedida()+" m");
-                }
-                if (!valores.isClosed()) {
-                    valores.close();
-                }
-
-            }
-
-            valores=dbValues.getNSensor(1,"N");
-            Log.d(SensoresAndroid.TAG, "Cargando Ruido");
-            if (valores.moveToFirst()) {
-                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
-
-                    SensorValue sensorvalue = new SensorValue(
-                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
-                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
-                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
-                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
-
-                    tv_ruido.setText(getString(R.string.ruido) + ": " + sensorvalue.getMedida() + " db");
-                }
-                if (!valores.isClosed()) {
-                    valores.close();
-                }
-
-            }
-
-            valores=dbValues.getNSensor(1,"L");
-            Log.d(SensoresAndroid.TAG, "Cargando Luminusidad");
-            if (valores.moveToFirst()) {
-                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
-
-                    SensorValue sensorvalue = new SensorValue(
-                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
-                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
-                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
-                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
-
-                    tv_luminusidad.setText(getString(R.string.luminosidad) + ": " + sensorvalue.getMedida() + " %");
-                }
-                if (!valores.isClosed()) {
-                    valores.close();
-                }
-
-            }
-
-            valores=dbValues.getNSensor(1,"P");
-            Log.d(SensoresAndroid.TAG, "Cargando Presion");
-            if (valores.moveToFirst()) {
-                for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
-
-                    SensorValue sensorvalue = new SensorValue(
-                            valores.getFloat(valores.getColumnIndex(SensorValueDataBaseHelper.COL_MEDIDA))
-                            ,""//,valores.getString(valores.getColumnIndex(SensorValueDataBaseHelper.COL_IDENTIFICADOR))
-                            ,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_FECHA))
-                            ,1);//,valores.getLong(valores.getColumnIndex(SensorValueDataBaseHelper.COL_ID)));
-
-                    tv_presion.setText(getString(R.string.presion) + ": " + sensorvalue.getMedida() + " atm");
-                }
-                if (!valores.isClosed()) {
-                    valores.close();
-                }
-
-            }
 
             /*
             if (!(values[6].isEmpty())) {
