@@ -22,9 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -357,7 +355,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             UsbRequest inRequest = new UsbRequest();
             inRequest.initialize(mUsbDeviceConnection, epIN);
 
-            while(inRequest.queue(mBuffer, bufferMaxLength)){
+            while(inRequest.queue(mBuffer, 15)){
+            //while(inRequest.queue(mBuffer, bufferMaxLength)){
 
                 mUsbDeviceConnection.requestWait();
 

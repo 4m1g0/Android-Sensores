@@ -200,6 +200,7 @@ void calculateTemperature(){
 
 string tamanoMsg(string msg, int tam){
     string salida = "";
+    int final = tam -strlen(msg);
     for(int i; i<tam;i++){
         salida= salida + " ";
     }
