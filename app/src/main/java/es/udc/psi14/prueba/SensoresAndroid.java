@@ -150,6 +150,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         but_led.setOnClickListener(this);
         lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
         servo_bar = (SeekBar) findViewById(R.id.servo_bar);
+        servo_bar.setMax(120);
 
         servo_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int angle;
@@ -274,7 +275,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         buffer.put(msg.getBytes());
 
         //queue the outbound request
-        boolean retval = request.queue(buffer, 2);
+        boolean retval = request.queue(buffer, msg.getBytes().length);
     }
 
     @Override
