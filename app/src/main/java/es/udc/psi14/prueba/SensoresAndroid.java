@@ -128,7 +128,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         for (SensorTemplate sensor : sensores) {
             HashMap<String, String> item = new HashMap<String, String>();
             item.put("name", sensor.getNombre());
-            item.put("value", "0");
+            item.put("value", "0"+sensor.getUnidades());
             sensorListValues.add(item);
         }
         adapter = new SensorListAdapter(this, sensorListValues);
