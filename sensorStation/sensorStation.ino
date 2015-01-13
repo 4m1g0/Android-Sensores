@@ -109,7 +109,7 @@ void loop()
      Serial.print(random(0,255), DEC);
      Serial.println(";");
      */
-     Serial.println(tamanoMsg("R:" + random(0,255) + ";"),TAMSTRING )
+     Serial.println(tamanoMsg("R:" + random(0,255) + ";",TAMSTRING) )
 
      /*
      Serial.print("C:");
@@ -117,17 +117,17 @@ void loop()
      Serial.println(";");
      */
 
-     Serial.println(tamanoMsg("C:" + contador++ + ";"),TAMSTRING )
+     Serial.println(tamanoMsg("C:" + contador++ + ";",TAMSTRING) )
      
      
      
      
      if (encender == 0){
        //Serial.println("LED:L;");
-       Serial.println(tamanoMsg("LED:L;"),TAMSTRING )
+       Serial.println(tamanoMsg("LED:L;",TAMSTRING ))
      }else{
        //Serial.println("LED:H;");
-       Serial.println(tamanoMsg("LED:H;")TAMSTRING )
+       Serial.println(tamanoMsg("LED:H;"TAMSTRING) )
      }
   }
   
@@ -195,7 +195,7 @@ void calculateTemperature(){
   Serial.print(temperature, DEC);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("T:" + temperature + ";"),TAMSTRING )
+  Serial.println(tamanoMsg("T:" + temperature + ";",TAMSTRING ))
 }
 
 string tamanoMsg(string msg, int tam){
@@ -221,7 +221,7 @@ void calculatePressure(){
   Serial.print(pressure/100, DEC);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("P:" + pressure/100 + ";"),TAMSTRING )
+  Serial.println(tamanoMsg("P:" + pressure/100 + ";",TAMSTRING) )
 }   
 
 void showPressure(){
@@ -238,7 +238,7 @@ void calculateAltitude(){
   Serial.print(altitude, 2);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("A:" + altitude + ";"),TAMSTRING )
+  Serial.println(tamanoMsg("A:" + altitude + ";",TAMSTRING) )
 }
 
 void showAltitude(){ 
@@ -255,7 +255,7 @@ void calculateLuminosity(){
   Serial.print(luminosity);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("L:" + luminisity + ";"),TAMSTRING )
+  Serial.println(tamanoMsg("L:" + luminisity + ";",TAMSTRING) )
 }
 
 void showLuminosity(){
@@ -272,7 +272,7 @@ void calculateHumidity(){
   Serial.print(humidity);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("H:" + humidity + ";"),TAMSTRING )
+  Serial.println(tamanoMsg("H:" + humidity + ";",TAMSTRING) )
 }
 
 void showHumidity(){
@@ -289,7 +289,7 @@ void calculateNoise(){
   Serial.print(noise);
   Serial.println(";");
   */
-  Serial.println(tamanoMsg("N:" + noise + ";"),TAMSTRING )
+  Serial.println(tamanoMsg("N:" + noise + ";",TAMSTRING) )
 }
 
 void showNoise(){
