@@ -63,7 +63,7 @@ IPAddress subnet(255, 255, 255, 0);
 EthernetServer server(4952);
 
 unsigned long loopTimer = 0, sensorsTimer=0, lcdTimer = 0;
-#define SENSORS_TIME 500
+#define SENSORS_TIME 1000
 #define LCD_TIME 5000
 int lcdActual = 0;
 int encender = 0;
@@ -168,7 +168,7 @@ void calculateTemperature(){
   temperature = 2;//bmp085GetTemperature(bmp085ReadUT())/10;
   Serial.print("T:");
   Serial.print(temperature, DEC);
-  Serial.print(";");
+  Serial.println(";");
 }
 
 void showTemperature(){
@@ -183,7 +183,7 @@ void calculatePressure(){
   pressure = 5;//bmp085GetPressure(bmp085ReadUP());
   Serial.print("P:");
   Serial.print(pressure/100, DEC);
-  Serial.print(";");
+  Serial.println(";");
 }   
 
 void showPressure(){
@@ -198,7 +198,7 @@ void calculateAltitude(){
   altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
   Serial.print("A:");
   Serial.print(altitude, 2);
-  Serial.print(";");
+  Serial.println(";");
 }
 
 void showAltitude(){ 
@@ -213,7 +213,7 @@ void calculateLuminosity(){
   luminosity=map(analogRead(LDR),0,1023,100,0);
   Serial.print("L:");
   Serial.print(luminosity);
-  Serial.print(";");
+  Serial.println(";");
 }
 
 void showLuminosity(){
@@ -228,7 +228,7 @@ void calculateHumidity(){
   humidity = dht112.read();
   Serial.print("H:");
   Serial.print(humidity);
-  Serial.print(";");
+  Serial.println(";");
 }
 
 void showHumidity(){
@@ -243,7 +243,7 @@ void calculateNoise(){
   noise=map(analogRead(NPIN),0,1023,0,100);  
   Serial.print("N:");
   Serial.print(noise);
-  Serial.print(";");
+  Serial.println(";");
 }
 
 void showNoise(){
