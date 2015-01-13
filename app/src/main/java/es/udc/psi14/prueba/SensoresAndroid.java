@@ -354,15 +354,15 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             ByteBuffer mBuffer = ByteBuffer.allocate(bufferMaxLength);
             UsbRequest inRequest = new UsbRequest();
             inRequest.initialize(mUsbDeviceConnection, epIN);
-
-            while(inRequest.queue(mBuffer, 15)){
-            //while(inRequest.queue(mBuffer, bufferMaxLength)){
+            long cont=0;
+            //while(cont==0){if(inRequest.queue(mBuffer, bufferMaxLength)){
+            while(inRequest.queue(mBuffer, bufferMaxLength)){
 
                 mUsbDeviceConnection.requestWait();
 
                 try {
                     tv_temperatura.setText(new String(mBuffer.array(), "UTF-8"));
-                    /*String salida= "";
+                    String salida= "";
                     // Recogemos los datos que recibimos en un
                     line = line + new String(mBuffer.array(), "UTF-8").trim();
 
@@ -370,6 +370,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         //Toast.makeText(SensoresAndorid.this, line, Toast.LENGTH_LONG).show();
                         String[] msg= (line.split(";"));
 
+                        /*
                         //Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
                             String[] medida = msg[i].split(":");
@@ -385,13 +386,13 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                             }
 
 
-                        }
+                        }*/
                         //  Actualizamos el GUI
                         //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
                         publishProgress(salida);
                         line = "";
 
-                    }*/
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
