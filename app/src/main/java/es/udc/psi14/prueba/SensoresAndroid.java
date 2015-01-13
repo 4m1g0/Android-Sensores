@@ -19,8 +19,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     //  Variables GUI
     Button but_conectar, but_iniSesnores, but_addSensor;
     Switch but_led;
+    SeekBar servo_bar;
     boolean estadoLed, permissionGranted, conectado;
     SensorValueDataBaseHelper dbValues;
     SensorTemplateDataBaseHelper dbTemplate;
@@ -71,6 +74,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         conectado=true;
                         but_conectar.setVisibility(View.GONE);
                         but_led.setVisibility(View.VISIBLE);
+                        servo_bar.setVisibility(View.VISIBLE);
                         configureComunicationUSB();
                         new UpdateSensors().execute();
                     }else{
@@ -84,6 +88,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
                     but_led.setVisibility(View.GONE);
+                    servo_bar.setVisibility(View.GONE);
                     permissionGranted = false;
                     conectado = false;
                 }
@@ -124,6 +129,24 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         but_iniSesnores.setOnClickListener(this);
         but_led = (Switch) findViewById(R.id.led);
         but_led.setOnClickListener(this);
+        servo_bar = (SeekBar) findViewById(R.id.servo_bar);
+
+        servo_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int angle;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                angle = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                enviarMsg(String.valueOf(angle), mUsbDeviceConnection, epOUT);
+            }
+        });
     }
 
     @Override
@@ -246,9 +269,9 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             String msg;
             estadoLed= but_led.isChecked();
             if (estadoLed){
-                msg = "1";
+                msg = "L1";
             }else{
-                msg = "0";
+                msg = "L0";
             }
             enviarMsg(msg, mUsbDeviceConnection, epOUT);
 
