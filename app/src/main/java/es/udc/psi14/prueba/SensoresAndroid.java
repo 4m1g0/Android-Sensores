@@ -19,16 +19,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class SensoresAndroid extends Activity implements View.OnClickListener{
 
@@ -38,6 +39,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
     //  Variables GUI
     Button but_conectar, but_iniSesnores, but_addSensor;
+    ListView lv_sensor_list;
+    ArrayList<Map<String, String>> sensorList;
     Switch but_led;
     SeekBar servo_bar;
     boolean estadoLed, permissionGranted, conectado;
@@ -129,6 +132,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         but_iniSesnores.setOnClickListener(this);
         but_led = (Switch) findViewById(R.id.led);
         but_led.setOnClickListener(this);
+        lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
+        //lv_sensor_list.setAdapter(new SensorListAdapter(this, new String[]{"data1","data2"}));
         servo_bar = (SeekBar) findViewById(R.id.servo_bar);
 
         servo_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -353,6 +358,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                                 if (medida[0].equals(arraySensores[j].getIdentificador()) ) {
                                     salida=salida+j+";";
                                     salida=salida+medida[1]+";";
+                                    break;
                                 }
                             }
 

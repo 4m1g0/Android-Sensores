@@ -84,5 +84,11 @@
         android:id="@+id/servo_bar"
         android:visibility="gone" />
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sensor_list"
+        android:layout_gravity="center_horizontal" />
+
 
 </LinearLayout>
