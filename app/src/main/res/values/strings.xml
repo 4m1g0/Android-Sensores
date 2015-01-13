@@ -23,5 +23,12 @@
     <string name="lineaFinal">Encontrada final de linea</string>
     <string name="inicializar">iniciaizar</string>
     <string name="addSensor">Añadir sensor</string>
+    <string name="title_activity_add_sensor">AddSensorActiv</string>
+    <string name="nuevo_sensor_str">Nuevo sensor</string>
+    <string name="nombre_str">Nombre: </string>
+    <string name="identificador_str">Identificador: </string>
+    <string name="unidades_str">Unidades: </string>
+    <string name="temperatura_str">Temperatura</string>
+    <string name="add_str">Añadir</string>
 
 </resources>

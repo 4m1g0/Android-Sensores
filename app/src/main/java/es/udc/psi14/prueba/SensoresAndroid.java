@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -294,7 +295,26 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
 
         }else if (v== but_addSensor){
+            Intent intent = new Intent(this, AddSensorActiv.class);
+            startActivityForResult(intent, 1);
+        }
+    }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                // actualizamos la lista de sensores para incluir el nuevo
+                sensores= cargaTemplates();
+                sensorListValues.clear();
+                for (SensorTemplate sensor : sensores) {
+                    HashMap<String, String> item = new HashMap<String, String>();
+                    item.put("name", sensor.getNombre());
+                    item.put("value", "0"+sensor.getUnidades());
+                    sensorListValues.add(item);
+                }
+                // notificamos al adapter que se ha añadido un sensor
+                adapter.notifyDataSetChanged();
+            }
         }
     }
 
