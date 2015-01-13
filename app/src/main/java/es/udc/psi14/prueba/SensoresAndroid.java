@@ -40,7 +40,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
 
     //  Variables GUI
-    Button but_conectar, but_iniSesnores, but_addSensor;
+    Button but_conectar, but_addSensor;
     ListView lv_sensor_list;
     ArrayList<Map<String, String>> sensorListValues;
     Switch but_led;
@@ -139,10 +139,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
         but_conectar = (Button) findViewById(R.id.but_conectar);
         but_conectar.setOnClickListener(this);
-        but_iniSesnores = (Button) findViewById(R.id.but_iniSesnores);
         but_addSensor = (Button) findViewById(R.id.but_addSensor);
         but_addSensor.setOnClickListener(this);
-        but_iniSesnores.setOnClickListener(this);
         but_led = (Switch) findViewById(R.id.led);
         but_led.setOnClickListener(this);
         lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
@@ -279,10 +277,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     public void onClick(View v) {
         if (v == but_conectar) {
             conectar();
-        }else if(v==but_iniSesnores){
-            dbTemplate.inicializar();
-            but_iniSesnores.setVisibility(View.GONE);
-
         }else if (v == but_led) {
             String msg;
             estadoLed= but_led.isChecked();
