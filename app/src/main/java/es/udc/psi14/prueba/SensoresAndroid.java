@@ -303,7 +303,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 // actualizamos la lista de sensores para incluir el nuevo
-                sensores= cargaTemplates();
+                sensores = cargaTemplates();
                 sensorListValues.clear();
                 for (SensorTemplate sensor : sensores) {
                     HashMap<String, String> item = new HashMap<String, String>();
@@ -362,7 +362,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 mUsbDeviceConnection.requestWait();
 
                 try {
-                    String salida= "";
+                    tv_temperatura.setText(new String(mBuffer.array(), "UTF-8"));
+                    /*String salida= "";
                     // Recogemos los datos que recibimos en un
                     line = line + new String(mBuffer.array(), "UTF-8").trim();
 
@@ -370,15 +371,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         //Toast.makeText(SensoresAndorid.this, line, Toast.LENGTH_LONG).show();
                         String[] msg= (line.split(";"));
 
-
-                        String temperature="";
-                        String humidity="";
-
-                        String altitud="";
-                        String luminusidad="";
-                        String noise="";
-                        String preasure="";
-                        String confLed="";
                         //Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
                             String[] medida = msg[i].split(":");
@@ -393,37 +385,14 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                                 }
                             }
 
-                            /*
-                            if (medida[0].equals("LED")){
-                                confLed=medida[1];
-                            }
 
-                            if (medida[0].equals("T")){
-                                temperature=medida[1];
-                            }
-                            if (medida[0].equals("H")){
-                                humidity=medida[1];
-                            }
-                            if (medida[0].equals("P")) {
-                                preasure = medida[1];
-                            }
-                            if (medida[0].equals("N")){
-                                noise=medida[1];
-                            }
-                            if (medida[0].equals("L")){
-                                luminusidad=medida[1];
-                            }
-                            if (medida[0].equals("A")){
-                                altitud=medida[1];
-                            }
-                            */
                         }
                         //  Actualizamos el GUI
                         //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
                         publishProgress(salida);
                         line = "";
 
-                    }
+                    }*/
 
                 } catch (Exception e) {
                     e.printStackTrace();
