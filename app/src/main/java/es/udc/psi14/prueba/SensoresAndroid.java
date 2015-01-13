@@ -274,7 +274,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         buffer.put(msg.getBytes());
 
         //queue the outbound request
-        boolean retval = request.queue(buffer, 1);
+        boolean retval = request.queue(buffer, 2);
     }
 
     @Override
