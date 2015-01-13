@@ -30,5 +30,7 @@
     <string name="unidades_str">Unidades: </string>
     <string name="temperatura_str">Temperatura</string>
     <string name="add_str">Añadir</string>
+    <string name="delete_str">Borrar</string>
+    <string name="vview_description_str">Ver descripción</string>
 
 </resources>

@@ -17,7 +17,11 @@ import android.hardware.usb.UsbRequest;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -134,6 +138,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         }
         adapter = new SensorListAdapter(this, sensorListValues);
         lv_sensor_list.setAdapter(adapter);
+        registerForContextMenu(lv_sensor_list);
 
         vecesActualizado=0;
 
@@ -444,7 +449,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                     sensorListValues.get(Integer.parseInt(procesar[i])).put("value", procesar[i+1]);
                     adapter.notifyDataSetChanged();
 
-                    sensorValue = new SensorValue(Float.parseFloat(procesar[i+1]), sensor.getIdentificador(), c.getTimeInMillis());
+                    sensorValue = new SensorValue(Float.parseFloat(procesar[i+1]), sensor.getId(), c.getTimeInMillis());
                     dbValues.insertSensor(sensorValue);
                 }
 
@@ -452,7 +457,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
             // FIXME: a partir de aqui ya esta implementado en el list view
 
-            Cursor valores=dbValues.getNSensor(1,"H");
+            /*Cursor valores=dbValues.getNSensor(1,"H");
             Log.d(SensoresAndroid.TAG, "Cargando Humedad");
             if (valores.moveToFirst()) {
                 for (valores.moveToFirst(); !valores.isAfterLast(); valores.moveToNext()) {
@@ -584,4 +589,32 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.delete:
+                int pos = sensores.size() - item.getOrder() -1;
+                SensorTemplate sensor = sensores.get(pos);
+                dbTemplate.deleteSensor(sensor.getId());
+                sensores.remove(pos);
+                // borramos los datos almacenados para ese sensor ¿preguntar confirmación?
+                sensorListValues.remove(pos);
+                dbValues.deleteSensor(sensor.getId());
+                adapter.notifyDataSetChanged();
+                return true;
+            case R.id.view_desc:
+                //TODO: ver descripcion
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 }

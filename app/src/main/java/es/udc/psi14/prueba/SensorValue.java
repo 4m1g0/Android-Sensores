@@ -2,18 +2,18 @@ package es.udc.psi14.prueba;
 
 public class SensorValue {
     private float medida;
-    private String identificador;
+    private long sensorId;
     private long id, fecha;
 
-    public SensorValue(float medida, String identificador, long fecha){
+    public SensorValue(float medida, long sid, long fecha){
         this.medida=medida;
-        this.identificador=identificador;
+        this.sensorId=sid;
         this.fecha=fecha;
     }
 
-    public SensorValue(float medida, String identificador, long fecha, long id){
+    public SensorValue(float medida, long sid, long fecha, long id){
         this.medida=medida;
-        this.identificador=identificador;
+        this.sensorId=sid;
         this.fecha=fecha;
         this.id=id;
     }
@@ -22,8 +22,8 @@ public class SensorValue {
         this.medida=medida;
     }
 
-    public void setIdentificador(String identificador){
-        this.identificador=identificador;
+    public void setSensorId(long sid){
+        this.sensorId=sid;
     }
 
     public void setFecha(long fecha){
@@ -38,8 +38,8 @@ public class SensorValue {
         return medida;
     }
 
-    public String getIdentificador(){
-        return identificador;
+    public long getSensorId(){
+        return sensorId;
     }
 
     public long getFecha(){

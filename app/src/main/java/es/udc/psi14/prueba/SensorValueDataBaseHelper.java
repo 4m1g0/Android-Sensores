@@ -15,13 +15,13 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     public static final String TABLE_NOMBRE = "tabla_Values";
     public static final String COL_ID = "_id"; // critical for Adapters
-    public static final String COL_IDENTIFICADOR = "identificador";
+    public static final String COL_SID = "identificador";
     public static final String COL_MEDIDA = "medida";
     public static final String COL_FECHA = "FECHA";
 
     String DATABASE_CREATE = "create table " + TABLE_NOMBRE + " ( "
             + COL_ID + " integer primary key autoincrement, "
-            + COL_IDENTIFICADOR + " text not null, "
+            + COL_SID + " integer not null, "
             + COL_MEDIDA + " real not null, "
             + COL_FECHA + " integer not null );";
 
@@ -43,19 +43,19 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void  deleteSensor(String sensor){
-        getWritableDatabase().delete(TABLE_NOMBRE, COL_IDENTIFICADOR + "=?",new String[] {sensor});
+    public void deleteSensor(long sid) {
+        getWritableDatabase().delete(TABLE_NOMBRE, COL_SID + "=?", new String[]
+                { String.valueOf(sid) });
     }
 
-    public Cursor getNSensor (int N, String sensor){
+    public Cursor getNSensor (int sid){
         String[] campos = new String[] {COL_MEDIDA, COL_FECHA};
-        String[] args = new String[] {sensor};
-        return getWritableDatabase().query(TABLE_NOMBRE, campos, COL_IDENTIFICADOR+"=?", args, null,null,COL_ID+" DESC" , String.valueOf(N));
+        return getWritableDatabase().query(TABLE_NOMBRE, null, COL_SID+"=?", new String[] { String.valueOf(sid) }, null,null,COL_ID+" DESC" );
     }
 
     public long insertSensor(SensorValue sensorValue) {
         ContentValues cv = new ContentValues();
-        cv.put(COL_IDENTIFICADOR, sensorValue.getIdentificador());
+        cv.put(COL_SID, sensorValue.getSensorId());
         cv.put(COL_MEDIDA, sensorValue.getMedida());
         cv.put(COL_FECHA, sensorValue.getFecha());
 
@@ -69,7 +69,7 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
     public void updateSensor(SensorValue sensorValue) {
         long idNot = sensorValue.getId();
         ContentValues cv = new ContentValues();
-        cv.put(COL_IDENTIFICADOR, sensorValue.getIdentificador());
+        cv.put(COL_SID, sensorValue.getSensorId());
         cv.put(COL_MEDIDA, sensorValue.getMedida());
         cv.put(COL_FECHA, sensorValue.getFecha());
 

@@ -51,12 +51,6 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void  deleteSensor(String sensor){
-        getWritableDatabase().delete(TABLE_NOMBRE, COL_IDENTIFICADOR + "=?",new String[] {sensor});
-    }
-
-
-
     public long insertSensor(SensorTemplate sensorTemplate) {
         ContentValues cv = new ContentValues();
         cv.put(COL_IDENTIFICADOR, sensorTemplate.getIdentificador());
