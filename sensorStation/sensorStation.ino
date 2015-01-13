@@ -4,6 +4,9 @@
 #include <LiquidCrystal.h>
 #include <Ethernet.h>
 #include <SPI.h>
+#include <Servo.h> 
+ 
+
 
 #define BMP085_ADDRESS 0x77  // I2C address of BMP085
 
@@ -12,6 +15,8 @@
 #define DHTLIB_ERROR_TIMEOUT -2
 
 const unsigned char OSS = 0;  // Oversampling Setting
+
+Servo myservo;
 
 // Calibration values
 int ac1;
@@ -58,7 +63,7 @@ IPAddress subnet(255, 255, 255, 0);
 EthernetServer server(4952);
 
 unsigned long loopTimer = 0, sensorsTimer=0, lcdTimer = 0;
-#define SENSORS_TIME 1000
+#define SENSORS_TIME 500
 #define LCD_TIME 5000
 int lcdActual = 0;
 int encender = 0;
@@ -80,6 +85,8 @@ void setup()
   //Ethernet.begin(mac, ip);
   //server.begin();
   //showLoading();
+  
+  myservo.attach(9);
 }
 
 void loop()
@@ -95,21 +102,34 @@ void loop()
      calculateLuminosity();
      calculateHumidity();
      calculateNoise();
-     if (Serial.available() > 0){
-       encender = Serial.parseInt();
-       if (encender ==0){
-         digitalWrite(led, LOW);
-       }else{
-         digitalWrite(led,HIGH);
-       }
-     }
      if (encender == 0){
        Serial.println("LED:L;");
      }else{
        Serial.println("LED:H;");
      }
   }
-  if (0) //((millis()-lcdTimer) > LCD_TIME)
+  
+  if (Serial.available() > 0){
+       char command = Serial.read();
+       switch (command) {
+            case 'L':
+                encender = Serial.parseInt();
+                if (encender == 0) {
+                    digitalWrite(led, LOW);
+                } else{
+                    digitalWrite(led,HIGH);
+                }
+                break;
+            case 'S':
+                int angle = Serial.parseInt();
+                myservo.write(constrain(angle, 0, 180));
+                Serial.println("test");
+                break;
+       }
+       
+  }
+  
+  /*if (0) //((millis()-lcdTimer) > LCD_TIME)
   {
     lcdTimer=millis();
     switch(lcdActual){
@@ -141,14 +161,14 @@ void loop()
         showError();
     }
   }
-  //listenForEthernetClients();
+  //listenForEthernetClients();*/
 }
 
 void calculateTemperature(){
   temperature = 2;//bmp085GetTemperature(bmp085ReadUT())/10;
   Serial.print("T:");
   Serial.print(temperature, DEC);
-  Serial.println(";");
+  Serial.print(";");
 }
 
 void showTemperature(){
@@ -163,7 +183,7 @@ void calculatePressure(){
   pressure = 5;//bmp085GetPressure(bmp085ReadUP());
   Serial.print("P:");
   Serial.print(pressure/100, DEC);
-  Serial.println(";");
+  Serial.print(";");
 }   
 
 void showPressure(){
@@ -178,7 +198,7 @@ void calculateAltitude(){
   altitude = (float)44330 * (1 - pow(((float) pressure/p0), 0.190295));
   Serial.print("A:");
   Serial.print(altitude, 2);
-  Serial.println(";");
+  Serial.print(";");
 }
 
 void showAltitude(){ 
@@ -193,7 +213,7 @@ void calculateLuminosity(){
   luminosity=map(analogRead(LDR),0,1023,100,0);
   Serial.print("L:");
   Serial.print(luminosity);
-  Serial.println(";");
+  Serial.print(";");
 }
 
 void showLuminosity(){
@@ -208,7 +228,7 @@ void calculateHumidity(){
   humidity = dht112.read();
   Serial.print("H:");
   Serial.print(humidity);
-  Serial.println(";");
+  Serial.print(";");
 }
 
 void showHumidity(){
@@ -223,7 +243,7 @@ void calculateNoise(){
   noise=map(analogRead(NPIN),0,1023,0,100);  
   Serial.print("N:");
   Serial.print(noise);
-  Serial.println(";");
+  Serial.print(";");
 }
 
 void showNoise(){
