@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -40,12 +41,13 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     //  Variables GUI
     Button but_conectar, but_iniSesnores, but_addSensor;
     ListView lv_sensor_list;
-    ArrayList<Map<String, String>> sensorList;
+    ArrayList<Map<String, String>> sensorListValues;
     Switch but_led;
     SeekBar servo_bar;
     boolean estadoLed, permissionGranted, conectado;
     SensorValueDataBaseHelper dbValues;
     SensorTemplateDataBaseHelper dbTemplate;
+    SensorListAdapter adapter;
 
     private int vecesActualizado;
 
@@ -115,12 +117,22 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         tv_altitud = (TextView) findViewById(R.id.tv_altitud);
         tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
         tv_presion =(TextView) findViewById(R.id.tv_presion);
+        lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
 
 
         dbValues=new SensorValueDataBaseHelper(this);
         dbTemplate=new SensorTemplateDataBaseHelper(this);
 
         sensores= cargaTemplates();
+        sensorListValues = new ArrayList<Map<String, String>>();
+        for (SensorTemplate sensor : sensores) {
+            HashMap<String, String> item = new HashMap<String, String>();
+            item.put("name", sensor.getNombre());
+            item.put("value", "0");
+            sensorListValues.add(item);
+        }
+        adapter = new SensorListAdapter(this, sensorListValues);
+        lv_sensor_list.setAdapter(adapter);
 
         vecesActualizado=0;
 
@@ -415,6 +427,10 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 if (!(procesar[i].isEmpty())){
                     Log.d(TAG,"Procesando: "+procesar[i]+" "+procesar[i+1]);
                     SensorTemplate sensor= sensores.get(Integer.parseInt(procesar[i]));
+                    // Update adapter to change list vew information
+                    sensorListValues.get(Integer.parseInt(procesar[i])).put("value", procesar[i+1]);
+                    adapter.notifyDataSetChanged();
+
                     sensorValue = new SensorValue(Float.parseFloat(procesar[i+1]), sensor.getIdentificador(), c.getTimeInMillis());
                     long code = dbValues.insertSensor(sensorValue);
                     /*msg=msg + sensor.getNombre() + ": " + procesar
