@@ -1,13 +1,10 @@
 package es.udc.psi14.prueba;
 
-/**
- * Created by Santiago on 10/12/2014.
- */
 public class SensorTemplate{
     private String nombre, unidades, identificador;
     private long id;
 
-
+    //TODO: coordenadas gps del sensor.
 
     public SensorTemplate(String nombre, String unidades, String identificador){
         this.nombre=nombre;
@@ -21,7 +18,6 @@ public class SensorTemplate{
         this.unidades=unidades;
         this.id=id;
     }
-
 
     @Override
     public String toString() {

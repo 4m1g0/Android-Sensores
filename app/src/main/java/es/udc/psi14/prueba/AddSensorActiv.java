@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-
 public class AddSensorActiv extends Activity implements View.OnClickListener {
 
     EditText et_nombre, et_identificador, et_unidades;
@@ -24,26 +23,6 @@ public class AddSensorActiv extends Activity implements View.OnClickListener {
         et_unidades = (EditText) findViewById(R.id.et_unidades);
         but_add = (Button) findViewById(R.id.but_add);
         but_add.setOnClickListener(this);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.add_sensor, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

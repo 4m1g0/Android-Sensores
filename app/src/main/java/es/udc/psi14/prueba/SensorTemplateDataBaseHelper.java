@@ -7,9 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/**
- * Created by Santiago on 26/11/2014.
- */
 public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
 
     private String[] nombres;
@@ -17,7 +14,6 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     private String[] unidades;
     private static final String DB_NAME = "SensorTemplate.db";
     private static final int DB_VERSION = 2;
-    private boolean ini;
 
 
 
@@ -44,7 +40,6 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(DATABASE_CREATE);
-        ini=true;
         inicializar(sqLiteDatabase);
     }
 
@@ -86,12 +81,6 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getSensores() {
-        Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES cogiendo");
-        if (ini){
-            Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES INI");
-            //inicializar();
-        }
-        //inicializar();
         return getWritableDatabase().query(TABLE_NOMBRE, null, null, null,
                 null,null, null);
     }
@@ -106,11 +95,7 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
             cv.put(COL_UNIDADES, sensorTemplate.getUnidades());
 
             db.insert(TABLE_NOMBRE, null, cv);
-            /*SensorTemplate sensor=new SensorTemplate(nombres[i],unidades[i],identificadores[i]);
-            long ident=insertSensor(sensor);
-            Log.d(SensoresAndroid.TAG, "Introduciendo TEMPLATE:"+sensor.toString());*/
         }
-        ini=false;
     }
 
 }

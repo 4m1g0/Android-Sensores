@@ -1,15 +1,9 @@
 package es.udc.psi14.prueba;
 
-/**
- * Created by Santiago on 26/11/2014.
- */
 public class SensorValue {
     private float medida;
     private String identificador;
     private long id, fecha;
-
-
-    //TODO: añandir coordenadas gps?
 
     public SensorValue(float medida, String identificador, long fecha){
         this.medida=medida;

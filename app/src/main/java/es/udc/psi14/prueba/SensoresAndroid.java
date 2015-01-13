@@ -144,7 +144,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         but_led = (Switch) findViewById(R.id.led);
         but_led.setOnClickListener(this);
         lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
-        //lv_sensor_list.setAdapter(new SensorListAdapter(this, new String[]{"data1","data2"}));
         servo_bar = (SeekBar) findViewById(R.id.servo_bar);
 
         servo_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -446,22 +445,12 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                     adapter.notifyDataSetChanged();
 
                     sensorValue = new SensorValue(Float.parseFloat(procesar[i+1]), sensor.getIdentificador(), c.getTimeInMillis());
-                    long code = dbValues.insertSensor(sensorValue);
-                    /*msg=msg + sensor.getNombre() + ": " + procesar
-                            [i+1] + " " + sensor.getUnidades() + "\n";*/
-                    if (code!=-1){
-                    }
+                    dbValues.insertSensor(sensorValue);
                 }
 
             }
 
-            /*
-            vecesActualizado++;
-            tv_temperatura.setText(vecesActualizado+"");
-            tv_humedad.setText(msg);
-            */
-
-
+            // FIXME: a partir de aqui ya esta implementado en el list view
 
             Cursor valores=dbValues.getNSensor(1,"H");
             Log.d(SensoresAndroid.TAG, "Cargando Humedad");
@@ -590,7 +579,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 but_led.setChecked(estadoLed);
             }
             */
-
+            //FIXME: hasta aqui!
         }
 
     }

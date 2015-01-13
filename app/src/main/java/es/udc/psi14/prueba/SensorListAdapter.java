@@ -10,9 +10,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by 4m1g0 on 13/01/15.
- */
 public class SensorListAdapter extends BaseAdapter {
 
     Context context;
