@@ -29,7 +29,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -349,14 +351,25 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
             String line="";
 
+            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            UsbRequest request = new UsbRequest();
+            request.initialize(mUsbDeviceConnection, epIN);
+            request.queue(buffer, 4096);
+            String data = "";
+            if (mUsbDeviceConnection.requestWait() == request) {
+                data = Arrays.toString(buffer.array());
+            }
+            tv_temperatura.setText(data);
 
-            int bufferMaxLength=epIN.getMaxPacketSize();
+            /*int bufferMaxLength=epIN.getMaxPacketSize();
             ByteBuffer mBuffer = ByteBuffer.allocate(bufferMaxLength);
             UsbRequest inRequest = new UsbRequest();
             inRequest.initialize(mUsbDeviceConnection, epIN);
             long cont=0;
             //while(cont==0){if(inRequest.queue(mBuffer, bufferMaxLength)){
             while(inRequest.queue(mBuffer, bufferMaxLength)){
+
 
                 mUsbDeviceConnection.requestWait();
 
@@ -389,7 +402,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         }*/
                         //  Actualizamos el GUI
                         //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
-                        publishProgress(salida);
+                        /*publishProgress(salida);
                         line = "";
 
                     }
@@ -397,7 +410,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
 
             return null;
         }
