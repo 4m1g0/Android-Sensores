@@ -82,6 +82,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
+            android:visibility="gone"
             android:id="@+id/et_rate"
             android:layout_weight="1"
             android:hint="@string/periodo_str" />
@@ -92,6 +93,7 @@
             android:layout_height="wrap_content"
             android:text="@string/update_str"
             android:id="@+id/but_rate"
+            android:visibility="gone"
             android:layout_gravity="right"
             android:layout_weight="1" />
     </LinearLayout>

@@ -111,6 +111,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                         but_led.setVisibility(View.VISIBLE);
                         servo_bar.setVisibility(View.VISIBLE);
                         but_rate.setVisibility(View.VISIBLE);
+                        et_rate.setVisibility(View.VISIBLE);
                         configureComunicationUSB();
                         new UpdateSensors().execute();
                     }else{
@@ -126,6 +127,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                     but_led.setVisibility(View.GONE);
                     servo_bar.setVisibility(View.GONE);
                     but_rate.setVisibility(View.GONE);
+                    et_rate.setVisibility(View.GONE);
                     permissionGranted = false;
                     conectado = false;
                 }
