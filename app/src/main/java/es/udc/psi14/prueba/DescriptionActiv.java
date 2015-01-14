@@ -24,8 +24,11 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
@@ -45,8 +48,10 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
     TextView tv_name, tv_unidades;
     ListView lv_values;
     private XYPlot plot1;
-    Button but_export;
+    Button but_export, but_import;
     LinkedList<SensorValue> values;
+    SensorTemplate sensorTemplate;
+    SensorValueDataBaseHelper dbValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,8 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
         plot1 = (XYPlot) findViewById(R.id.plot1);
         but_export = (Button) findViewById(R.id.but_export);
         but_export.setOnClickListener(this);
+        but_import = (Button) findViewById(R.id.but_import);
+        but_import.setOnClickListener(this);
 
 
         SensorTemplateDataBaseHelper dbTemplate = new SensorTemplateDataBaseHelper(this);
@@ -71,7 +78,6 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
             finish();
             return;
         }
-        SensorTemplate sensorTemplate = null;
         template.moveToFirst();
 
         sensorTemplate = new SensorTemplate(
@@ -84,7 +90,7 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
         plot1.setTitle(sensorTemplate.getNombre());
 
 
-        SensorValueDataBaseHelper dbValues = new SensorValueDataBaseHelper(this);
+        dbValues = new SensorValueDataBaseHelper(this);
         Cursor sensorValues = dbValues.getNSensor(sensorTemplate.getId());
         values= new LinkedList<SensorValue>();
         for (sensorValues.moveToFirst(); !sensorValues.isAfterLast(); sensorValues.moveToNext()) {
@@ -213,16 +219,13 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
         if (v == but_export) {
             try {
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                File file = new File(path, "export.csv");
+                File file = new File(path, sensorTemplate.getNombre() + ".csv");
 
                 file.createNewFile();
                 FileOutputStream fOut = new FileOutputStream(file);
                 OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-                Calendar calendar = Calendar.getInstance();
                 for (SensorValue value : values) {
-                    calendar.setTimeInMillis(value.getFecha());
-                    myOutWriter.append(value.getId() + ", " + formatter.format(calendar.getTime()) + ", " + value.getSensorId() + ", " + value.getMedida());
+                    myOutWriter.append(value.getId() + ", " + value.getFecha() + ", " + value.getSensorId() + ", " + value.getMedida());
                 }
 
                 myOutWriter.close();
@@ -232,6 +235,28 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
             catch (Exception e)
             {
                 e.printStackTrace();
+            }
+        } else if (v == but_import) {
+            try {
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File file = new File(path, sensorTemplate.getNombre() + ".csv");
+                FileInputStream fIn = new FileInputStream(file);
+                BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
+                String aDataRow = "";
+                String aBuffer[];
+                while ((aDataRow = myReader.readLine()) != null)
+                {
+                    aBuffer = aDataRow.split(",");
+                    for (String dato : aBuffer) { dato.trim(); }
+                    SensorValue value = new SensorValue(Float.parseFloat(aBuffer[3]), Long.parseLong(aBuffer[2]), Long.parseLong(aBuffer[1]), Long.parseLong(aBuffer[0]));
+
+                }
+                myReader.close();
+                Toast.makeText(v.getContext(),getString(R.string.imported_str),Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(v.getContext(), e.getMessage(),Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -40,5 +40,7 @@
     <string name="periodo_str">Periodo de muestreo (ms)</string>
     <string name="export_str">Exportar datos</string>
     <string name="exported_str">Los datos se han exportado correctamente</string>
+    <string name="imported_str">Archivo importado correctamente</string>
+    <string name="import_str">Importar datos</string>
 
 </resources>
