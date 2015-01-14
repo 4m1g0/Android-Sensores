@@ -108,11 +108,23 @@ public class DescriptionActiv extends Activity {
         lv_values.setAdapter(new SensorValuesAdapter(this, sensorListValues));
 
 
-        Float[] numSightings= valores;
-        Long[] fecha= fechas;
+        //Float[] numSightings= valores;
+        //Long[] fecha= fechas;
+
+        Number[] numSightings = {5, 8, 9, 2, 5};
+
+        // an array of years in milliseconds:
+        Number[] years = {
+                978307200,  // 2001
+                1009843200, // 2002
+                1041379200, // 2003
+                1072915200, // 2004
+                1104537600  // 2005
+        };
+
         Log.e("pene", "Seclecionados: " + fechas.length + "valores" );
         XYSeries series2 = new SimpleXYSeries(
-                Arrays.asList(fecha),
+                Arrays.asList(years),
                 Arrays.asList(numSightings),
                 sensorTemplate.getNombre());
 
@@ -149,7 +161,7 @@ public class DescriptionActiv extends Activity {
         plot1.addSeries(series2, formatter);
 
         // draw a domain tick for each year:
-        plot1.setDomainStep(XYStepMode.SUBDIVIDE, fecha.length);
+        plot1.setDomainStep(XYStepMode.SUBDIVIDE, years.length);
 
         // customize our domain/range labels
         plot1.setDomainLabel("hora");
