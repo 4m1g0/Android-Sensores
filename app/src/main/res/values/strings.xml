@@ -38,5 +38,7 @@
     <string name="not_found_str">Sensor no encontrado</string>
     <string name="update_str">Actualizar</string>
     <string name="periodo_str">Periodo de muestreo (ms)</string>
+    <string name="export_str">Exportar datos</string>
+    <string name="exported_str">Los datos se han exportado correctamente</string>
 
 </resources>

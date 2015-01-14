@@ -55,6 +55,13 @@
         android:layout_height="30mm"
         renderMode="use_main_thread"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/export_str"
+        android:id="@+id/but_export"
+        android:layout_gravity="center_horizontal" />
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

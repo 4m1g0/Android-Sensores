@@ -1,6 +1,7 @@
 package es.udc.psi14.prueba;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -10,6 +11,8 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +23,9 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
@@ -34,10 +40,12 @@ import java.util.LinkedList;
 import java.util.Map;
 
 
-public class DescriptionActiv extends Activity {
+public class DescriptionActiv extends Activity implements View.OnClickListener{
     TextView tv_name, tv_unidades;
     ListView lv_values;
     private XYPlot plot1;
+    Button but_export;
+    LinkedList<SensorValue> values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +59,8 @@ public class DescriptionActiv extends Activity {
         tv_unidades = (TextView) findViewById(R.id.tv_unidades);
         lv_values = (ListView) findViewById(R.id.lv_values);
         plot1 = (XYPlot) findViewById(R.id.plot1);
+        but_export = (Button) findViewById(R.id.but_export);
+        but_export.setOnClickListener(this);
 
 
         SensorTemplateDataBaseHelper dbTemplate = new SensorTemplateDataBaseHelper(this);
@@ -75,7 +85,7 @@ public class DescriptionActiv extends Activity {
 
         SensorValueDataBaseHelper dbValues = new SensorValueDataBaseHelper(this);
         Cursor sensorValues = dbValues.getNSensor(sensorTemplate.getId());
-        LinkedList<SensorValue> values= new LinkedList<SensorValue>();
+        values= new LinkedList<SensorValue>();
         for (sensorValues.moveToFirst(); !sensorValues.isAfterLast(); sensorValues.moveToNext()) {
 
             SensorValue value = new SensorValue(
@@ -197,5 +207,29 @@ public class DescriptionActiv extends Activity {
     }
 
 
+    @Override
+    public void onClick(View v) {
+        if (v == but_export) {
+            try {
+                File myFile = new File("/sdcard/export.txt");
+                myFile.createNewFile();
+                FileOutputStream fOut = new FileOutputStream(myFile);
+                OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+                Calendar calendar = Calendar.getInstance();
+                for (SensorValue value : values) {
+                    calendar.setTimeInMillis(value.getFecha());
+                    myOutWriter.append(value.getId() + ", " + formatter.format(calendar.getTime()) + ", " + value.getSensorId() + ", " + value.getMedida());
+                }
 
+                myOutWriter.close();
+                fOut.close();
+                Toast.makeText(v.getContext(),getString(R.string.exported_str), Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }
