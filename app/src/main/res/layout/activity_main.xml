@@ -84,8 +84,7 @@
             android:ems="10"
             android:id="@+id/et_rate"
             android:layout_weight="1"
-            android:text="3"
-            android:hint="@string/periodo_str" />
+            android:text="3" />
 
 
         <Button

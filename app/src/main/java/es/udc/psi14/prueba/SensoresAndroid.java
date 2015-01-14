@@ -110,6 +110,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                         but_conectar.setVisibility(View.GONE);
                         but_led.setVisibility(View.VISIBLE);
                         servo_bar.setVisibility(View.VISIBLE);
+                        but_rate.setVisibility(View.VISIBLE);
                         configureComunicationUSB();
                         new UpdateSensors().execute();
                     }else{
@@ -124,6 +125,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                 if (device != null) {
                     but_led.setVisibility(View.GONE);
                     servo_bar.setVisibility(View.GONE);
+                    but_rate.setVisibility(View.GONE);
                     permissionGranted = false;
                     conectado = false;
                 }
@@ -447,8 +449,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                     Log.d(TAG,"Procesando: "+procesar[i]+" "+procesar[i+1]);
                     SensorTemplate sensor= sensores.get(Integer.parseInt(procesar[i]));
                     if (selec==Integer.parseInt(procesar[i])){
-                        //but_addSensor.setText("sí");
-                        //addValorGrafica(Float.parseFloat(procesar[i+1]));
                         addValorGrafica(23);
                     }
                     // Update adapter to change list vew information
@@ -563,6 +563,5 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         aprHistoryPlot.setRangeLabel(sensor.getUnidades());
         aprHistoryPlot.redraw();
 
-        //tv_temperatura.setText(sensor.getNombre());
     }
 }
