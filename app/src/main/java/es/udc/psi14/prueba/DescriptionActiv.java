@@ -52,6 +52,8 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
     LinkedList<SensorValue> values;
     SensorTemplate sensorTemplate;
     SensorValueDataBaseHelper dbValues;
+    SensorValuesAdapter adapter;
+    ArrayList<Map<String, String>> sensorListValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +105,7 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
         }
 
         //print list
-        ArrayList<Map<String, String>> sensorListValues = new ArrayList<Map<String, String>>();
+        sensorListValues = new ArrayList<Map<String, String>>();
         Long[]fechas=new Long[values.size()];
         Float[]valores=new Float[values.size()];
         int cont=0;
@@ -122,7 +124,8 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
 
             sensorListValues.add(item);
         }
-        lv_values.setAdapter(new SensorValuesAdapter(this, sensorListValues));
+        adapter = new SensorValuesAdapter(this, sensorListValues);
+        lv_values.setAdapter(adapter);
 
 
         //Float[] numSightings= valores;
@@ -247,10 +250,20 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
                 while ((aDataRow = myReader.readLine()) != null)
                 {
                     aBuffer = aDataRow.split(",");
-                    for (String dato : aBuffer) { dato.trim(); }
-                    SensorValue value = new SensorValue(Float.parseFloat(aBuffer[3]), Long.parseLong(aBuffer[2]), Long.parseLong(aBuffer[1]), Long.parseLong(aBuffer[0]));
+                    SensorValue value = new SensorValue(Float.parseFloat(aBuffer[3].trim()), Long.parseLong(aBuffer[2].trim()), Long.parseLong(aBuffer[1].trim()), Long.parseLong(aBuffer[0].trim()));
+                    dbValues.insertSensor(value);
+                    HashMap<String, String> item = new HashMap<String, String>();
+                    item.put("medida", String.valueOf(value.getMedida()) + sensorTemplate.getUnidades());
 
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(value.getFecha());
+                    item.put("fecha", formatter.format(calendar.getTime()));
+
+                    sensorListValues.add(item);
                 }
+                adapter.notifyDataSetChanged();
                 myReader.close();
                 Toast.makeText(v.getContext(),getString(R.string.imported_str),Toast.LENGTH_SHORT).show();
             }
