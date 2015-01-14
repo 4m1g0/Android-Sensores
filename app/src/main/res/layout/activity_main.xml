@@ -84,7 +84,6 @@
             android:ems="10"
             android:id="@+id/et_rate"
             android:layout_weight="1"
-            android:text="1000"
             android:hint="@string/periodo_str" />
 
 
