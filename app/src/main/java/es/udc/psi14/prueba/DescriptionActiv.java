@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,12 +68,12 @@ public class DescriptionActiv extends Activity {
         ArrayList<Map<String, String>> sensorListValues = new ArrayList<Map<String, String>>();
         for (SensorValue value : values) {
             HashMap<String, String> item = new HashMap<String, String>();
-            item.put("medida", String.valueOf(value.getMedida()) + sensorTemplate.getUnidades());
+            item.put("value", String.valueOf(value.getMedida()) + sensorTemplate.getUnidades());
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(value.getFecha());
-            item.put("fecha", formatter.format(calendar.getTime()));
+            item.put("name", formatter.format(calendar.getTime()));
 
             sensorListValues.add(item);
         }

@@ -23,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -351,26 +350,26 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         protected String doInBackground(String... params) {
 
             int s=1;
-        while(s==1){
-            String line = "";
+            while(s==1){
+                String line = "";
 
-            ByteBuffer buffer = ByteBuffer.allocate(32);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-            UsbRequest request = new UsbRequest();
-            request.initialize(mUsbDeviceConnection, epIN);
-            request.queue(buffer, 32);
-            String data = "";
-            if (mUsbDeviceConnection.requestWait() == request) {
-                try {
-                    data = new String(buffer.array(),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                ByteBuffer buffer = ByteBuffer.allocate(32);
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
+                UsbRequest request = new UsbRequest();
+                request.initialize(mUsbDeviceConnection, epIN);
+                request.queue(buffer, 32);
+                String data = "";
+                if (mUsbDeviceConnection.requestWait() == request) {
+                    try {
+                        data = new String(buffer.array(),"UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
-            }
 
-
-            //tv_temperatura.setText("dasdasdasdasd");
+                //tv_temperatura.setText("dasdasdasdasd");
 
             /*int bufferMaxLength=epIN.getMaxPacketSize();
             ByteBuffer mBuffer = ByteBuffer.allocate(bufferMaxLength);
@@ -379,8 +378,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             long cont=0;
             //while(cont==0){if(inRequest.queue(mBuffer, bufferMaxLength)){
             while(inRequest.queue(mBuffer, bufferMaxLength)){
-
-
                 mUsbDeviceConnection.requestWait();*/
 
                 try {
@@ -475,7 +472,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.delete:
-                int pos = sensores.size() - item.getOrder() -1;
+                int pos = info.position;
                 SensorTemplate sensor = sensores.get(pos);
                 dbTemplate.deleteSensor(sensor.getId());
                 sensores.remove(pos);
@@ -486,7 +483,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 return true;
             case R.id.view_desc:
                 Intent intent = new Intent(this, DescriptionActiv.class);
-                pos = sensores.size() - item.getOrder() -1;
+                pos = info.position;
                 sensor = sensores.get(pos);
                 intent.putExtra("sensor_id", sensor.getId());
                 startActivity(intent);
