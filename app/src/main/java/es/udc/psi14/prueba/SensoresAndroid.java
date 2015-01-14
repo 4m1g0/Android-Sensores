@@ -109,9 +109,9 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                         Log.d(TAG, getString(R.string.permisoAceptado));
                         permissionGranted = true;
                         conectado=true;
-                        //but_conectar.setVisibility(View.GONE);
-                        //but_led.setVisibility(View.VISIBLE);
-                        //servo_bar.setVisibility(View.VISIBLE);
+                        but_conectar.setVisibility(View.GONE);
+                        but_led.setVisibility(View.VISIBLE);
+                        servo_bar.setVisibility(View.VISIBLE);
                         configureComunicationUSB();
                         new UpdateSensors().execute();
                     }else{
@@ -124,8 +124,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
-                    //but_led.setVisibility(View.GONE);
-                    //servo_bar.setVisibility(View.GONE);
+                    but_led.setVisibility(View.GONE);
+                    servo_bar.setVisibility(View.GONE);
                     permissionGranted = false;
                     conectado = false;
                 }
@@ -197,32 +197,9 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
 
         //grafica
         aprHistoryPlot = (XYPlot) findViewById(R.id.aprHistoryPlot);
+        aprHistoryPlot.setVisibility(View.GONE);
 
-        azimuthHistorySeries = new SimpleXYSeries("Az.");
-        azimuthHistorySeries.useImplicitXVals();
 
-        aprHistoryPlot.setRangeBoundaries(-180, 359, BoundaryMode.FIXED);
-        aprHistoryPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
-        aprHistoryPlot.addSeries(azimuthHistorySeries,
-                new LineAndPointFormatter(
-                        Color.rgb(100, 100, 200), null, null, null));
-        aprHistoryPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
-        aprHistoryPlot.setDomainStepValue(HISTORY_SIZE/10);
-        aprHistoryPlot.setTicksPerRangeLabel(3);
-        aprHistoryPlot.setDomainLabel("Tiempo");
-        aprHistoryPlot.getDomainLabelWidget().pack();
-        aprHistoryPlot.setRangeLabel("poner");
-        aprHistoryPlot.getRangeLabelWidget().pack();
-
-        aprHistoryPlot.setRangeValueFormat(new DecimalFormat("#"));
-        aprHistoryPlot.setDomainValueFormat(new DecimalFormat("#"));
-
-        final PlotStatistics histStats = new PlotStatistics(1000, false);
-
-        aprHistoryPlot.addListener(histStats);
-        redrawer = new Redrawer(
-                Arrays.asList(new Plot[]{aprHistoryPlot}),
-                100, false);
         selec=-1;
     }
 
@@ -324,14 +301,14 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
 
     private void enviarMsg(String msg, UsbDeviceConnection mUsbDeviceConnection, UsbEndpoint epOUT){
         int bufferMaxLength = epOUT.getMaxPacketSize();
-        ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
+        ByteBuffer buffer = ByteBuffer.allocate(32);
         UsbRequest request = new UsbRequest(); // create an URB
         request.initialize(mUsbDeviceConnection, epOUT);
 
         buffer.put(msg.getBytes());
 
         //queue the outbound request
-        boolean retval = request.queue(buffer, msg.getBytes().length);
+        boolean retval = request.queue(buffer, 32);
     }
 
     @Override
@@ -484,8 +461,9 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                     Log.d(TAG,"Procesando: "+procesar[i]+" "+procesar[i+1]);
                     SensorTemplate sensor= sensores.get(Integer.parseInt(procesar[i]));
                     if (selec==Integer.parseInt(procesar[i])){
-                        but_addSensor.setText("sí");
-                        addValorGrafica(Float.parseFloat(procesar[i+1]));
+                        //but_addSensor.setText("sí");
+                        //addValorGrafica(Float.parseFloat(procesar[i+1]));
+                        addValorGrafica(23);
                     }
                     // Update adapter to change list vew information
                     sensorListValues.get(Integer.parseInt(procesar[i])).put("value", procesar[i+1]);
@@ -520,7 +498,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         }
 
         // add the latest history sample:
-        azimuthHistorySeries.addLast(null, value);
+        azimuthHistorySeries.addLast(null, 56);
     }
 
     @Override
@@ -559,8 +537,46 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
+
+        if (selec!= -1){
+            aprHistoryPlot.removeSeries(azimuthHistorySeries);
+        }
+        else{
+            aprHistoryPlot.setVisibility(View.VISIBLE);
+        }
+
+        azimuthHistorySeries = new SimpleXYSeries("medida");
+        azimuthHistorySeries.useImplicitXVals();
+
+        aprHistoryPlot.setRangeBoundaries(-180, 359, BoundaryMode.FIXED);
+        aprHistoryPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
+        aprHistoryPlot.addSeries(azimuthHistorySeries,
+                new LineAndPointFormatter(
+                        Color.rgb(100, 100, 200), null, null, null));
+        aprHistoryPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
+        aprHistoryPlot.setDomainStepValue(HISTORY_SIZE/10);
+        aprHistoryPlot.setTicksPerRangeLabel(1);
+        aprHistoryPlot.setDomainLabel("Tiempo");
+        aprHistoryPlot.getDomainLabelWidget().pack();
+        aprHistoryPlot.setRangeLabel("poner");
+        aprHistoryPlot.getRangeLabelWidget().pack();
+
+        aprHistoryPlot.setRangeValueFormat(new DecimalFormat("#"));
+        aprHistoryPlot.setDomainValueFormat(new DecimalFormat("#"));
+
+        final PlotStatistics histStats = new PlotStatistics(1000, false);
+
+        aprHistoryPlot.addListener(histStats);
+        redrawer = new Redrawer(
+                Arrays.asList(new Plot[]{aprHistoryPlot}),
+                100, false);
+
         selec=pos;
         SensorTemplate sensor = sensores.get(pos);
+        azimuthHistorySeries.setTitle(sensor.getNombre());
+        aprHistoryPlot.setRangeLabel(sensor.getUnidades());
+        aprHistoryPlot.redraw();
+        Log.e(TAG, "Seclecionado" + sensor.getNombre());
         //tv_temperatura.setText(sensor.getNombre());
     }
 }
