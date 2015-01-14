@@ -48,7 +48,7 @@ public class SensorValueDataBaseHelper extends SQLiteOpenHelper {
                 { String.valueOf(sid) });
     }
 
-    public Cursor getNSensor (int sid){
+    public Cursor getNSensor (long sid){
         String[] campos = new String[] {COL_MEDIDA, COL_FECHA};
         return getWritableDatabase().query(TABLE_NOMBRE, null, COL_SID+"=?", new String[] { String.valueOf(sid) }, null,null,COL_ID+" DESC" );
     }

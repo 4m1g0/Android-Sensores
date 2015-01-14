@@ -20,6 +20,10 @@
             android:name=".AddSensorActiv"
             android:label="@string/title_activity_add_sensor" >
         </activity>
+        <activity
+            android:name=".DescriptionActiv"
+            android:label="@string/title_activity_description" >
+        </activity>
     </application>
 
 </manifest>

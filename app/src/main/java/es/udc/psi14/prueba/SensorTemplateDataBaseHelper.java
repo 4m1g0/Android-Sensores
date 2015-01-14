@@ -79,6 +79,10 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
                 null,null, null);
     }
 
+    public Cursor getSensor(int id) {
+        return getWritableDatabase().query(TABLE_NOMBRE, null, COL_ID+"=?", new String[] { String.valueOf(id) }, null,null,null);
+    }
+
     public void inicializar(SQLiteDatabase db){
         Log.d(SensoresAndroid.TAG, "INICIALIZANDO TEMPLATES"+nombres);
         for(int i=0; i<nombres.length; i++){

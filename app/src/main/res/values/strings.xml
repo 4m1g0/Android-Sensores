@@ -32,5 +32,9 @@
     <string name="add_str">Añadir</string>
     <string name="delete_str">Borrar</string>
     <string name="vview_description_str">Ver descripción</string>
+    <string name="title_activity_description">DescriptionActiv</string>
+    <string name="sensor_name_str">Nombre del sensor: </string>
+    <string name="nombre_sensor_str">Nombre del sensor: </string>
+    <string name="not_found_str">Sensor no encontrado</string>
 
 </resources>

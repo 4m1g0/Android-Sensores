@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -430,7 +431,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             SensorValue sensorValue;
             String msg="";
             String[] procesar = values[0].split(";");
-            Log.d(TAG, values.length+" :"+values[0]+"Nº=DATOS: " + procesar.length);
+            Log.d(TAG, values.length + " :" + values[0] + "Nº=DATOS: " + procesar.length);
             Calendar c = Calendar.getInstance();
             for(int i=0; i<procesar.length; i+=2){
 
@@ -447,9 +448,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
             }
 
-            // FIXME: a partir de aqui ya esta implementado en el list view
-
-
             /*
             if (!(values[6].isEmpty())) {
                 if (values[6].equals("H")){
@@ -461,7 +459,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 but_led.setChecked(estadoLed);
             }
             */
-            //FIXME: hasta aqui!
         }
 
     }
@@ -488,7 +485,11 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.view_desc:
-                //TODO: ver descripcion
+                Intent intent = new Intent(this, DescriptionActiv.class);
+                pos = sensores.size() - item.getOrder() -1;
+                sensor = sensores.get(pos);
+                intent.putExtra("sensor_id", sensor.getId());
+                startActivity(intent);
                 return true;
             default:
                 return super.onContextItemSelected(item);
