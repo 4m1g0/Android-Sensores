@@ -387,36 +387,25 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         @Override
         protected String doInBackground(String... params) {
 
-            int s=1;
-            while(s==1){
-                String line = "";
+            String line="";
 
-                ByteBuffer buffer = ByteBuffer.allocate(32);
-                buffer.order(ByteOrder.LITTLE_ENDIAN);
-                UsbRequest request = new UsbRequest();
-                request.initialize(mUsbDeviceConnection, epIN);
-                request.queue(buffer, 32);
-                String data = "";
-                if (mUsbDeviceConnection.requestWait() == request) {
-                    try {
-                        data = new String(buffer.array(),"UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
 
-                }
+            int bufferMaxLength=epIN.getMaxPacketSize();
+            ByteBuffer mBuffer = ByteBuffer.allocate(bufferMaxLength);
+            UsbRequest inRequest = new UsbRequest();
+            inRequest.initialize(mUsbDeviceConnection, epIN);
+
+            while(inRequest.queue(mBuffer, bufferMaxLength)){
+
+                mUsbDeviceConnection.requestWait();
 
                 try {
                     String salida= "";
                     // Recogemos los datos que recibimos en un
-                    line =  data.trim();
+                    line = line + new String(mBuffer.array(), "UTF-8").trim();
 
                     if (line.length()>0){
-                        //Toast.makeText(SensoresAndorid.this, line, Toast.LENGTH_LONG).show();
                         String[] msg= (line.split(";"));
-
-
-                        //Log.d(TAG, getString(R.string.lineaFinal)+": " + line);
                         for(int i=0; i<msg.length; i++){
                             String[] medida = msg[i].split(":");
                             //String[] medida = msg[0].split(":");
@@ -429,11 +418,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
                                     break;
                                 }
                             }
-
-
                         }
                         //  Actualizamos el GUI
-                        //publishProgress(humidity, temperature, altitud, noise, luminusidad, preasure,confLed);
                         publishProgress(salida);
                         line = "";
 
