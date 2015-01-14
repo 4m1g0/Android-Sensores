@@ -303,14 +303,14 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
 
     private void enviarMsg(String msg, UsbDeviceConnection mUsbDeviceConnection, UsbEndpoint epOUT){
         int bufferMaxLength = epOUT.getMaxPacketSize();
-        ByteBuffer buffer = ByteBuffer.allocate(32);
+        ByteBuffer buffer = ByteBuffer.allocate(bufferMaxLength);
         UsbRequest request = new UsbRequest(); // create an URB
         request.initialize(mUsbDeviceConnection, epOUT);
 
         buffer.put(msg.getBytes());
 
         //queue the outbound request
-        boolean retval = request.queue(buffer, 32);
+        boolean retval = request.queue(buffer, msg.getBytes().length);
     }
 
     @Override
