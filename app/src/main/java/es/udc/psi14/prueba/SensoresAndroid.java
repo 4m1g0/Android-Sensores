@@ -39,9 +39,7 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -173,6 +171,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         servo_bar = (SeekBar) findViewById(R.id.servo_bar);
         but_rate = (Button) findViewById(R.id.but_rate);
         et_rate = (EditText) findViewById(R.id.et_rate);
+
+        but_rate.setOnClickListener(this);
 
         lv_sensor_list.setOnItemClickListener(this);
         servo_bar.setMax(120);
