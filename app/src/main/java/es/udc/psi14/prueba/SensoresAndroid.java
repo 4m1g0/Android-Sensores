@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -28,16 +29,27 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.androidplot.Plot;
+import com.androidplot.util.PlotStatistics;
+import com.androidplot.util.Redrawer;
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYStepMode;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class SensoresAndroid extends Activity implements View.OnClickListener{
+public class SensoresAndroid extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener{
 
     public static final String TAG = SensoresAndroid.class.getName();
     private static final String CONECTIVIDAD ="estadoConectevidad";
@@ -71,6 +83,19 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
     // este broadcast se encarga de recoger la respuesta del usuario.
     private static final String ACTION_USB_PERMISSION = "com.android.USB_PERMISSION";
 
+
+    //grafica
+
+    private static final int HISTORY_SIZE = 60;
+    private XYPlot aprHistoryPlot = null;
+
+    //private SimpleXYSeries aprLevelsSeries = null;
+    private SimpleXYSeries azimuthHistorySeries = null;
+
+    private Redrawer redrawer;
+
+    private int selec;
+
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver(){
         public void onReceive(Context context, android.content.Intent intent) {
             String action = intent.getAction();
@@ -82,9 +107,9 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                         Log.d(TAG, getString(R.string.permisoAceptado));
                         permissionGranted = true;
                         conectado=true;
-                        but_conectar.setVisibility(View.GONE);
-                        but_led.setVisibility(View.VISIBLE);
-                        servo_bar.setVisibility(View.VISIBLE);
+                        //but_conectar.setVisibility(View.GONE);
+                        //but_led.setVisibility(View.VISIBLE);
+                        //servo_bar.setVisibility(View.VISIBLE);
                         configureComunicationUSB();
                         new UpdateSensors().execute();
                     }else{
@@ -97,8 +122,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 if (device != null) {
-                    but_led.setVisibility(View.GONE);
-                    servo_bar.setVisibility(View.GONE);
+                    //but_led.setVisibility(View.GONE);
+                    //servo_bar.setVisibility(View.GONE);
                     permissionGranted = false;
                     conectado = false;
                 }
@@ -116,12 +141,6 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             permissionGranted = savedInstanceState.getBoolean(CONECTIVIDAD, false);
         }
 
-        tv_temperatura = (TextView) findViewById(R.id.tv_temperatura);
-        tv_humedad = (TextView) findViewById(R.id.tv_humedad );
-        tv_ruido = (TextView) findViewById(R.id.tv_ruido);
-        tv_altitud = (TextView) findViewById(R.id.tv_altitud);
-        tv_luminusidad =(TextView) findViewById(R.id.tv_luminusidad);
-        tv_presion =(TextView) findViewById(R.id.tv_presion);
         lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
 
 
@@ -150,6 +169,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         but_led.setOnClickListener(this);
         lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
         servo_bar = (SeekBar) findViewById(R.id.servo_bar);
+
+        lv_sensor_list.setOnItemClickListener(this);
         servo_bar.setMax(120);
 
         servo_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -168,6 +189,37 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 enviarMsg("S" + String.valueOf(angle), mUsbDeviceConnection, epOUT);
             }
         });
+
+
+        //grafica
+        aprHistoryPlot = (XYPlot) findViewById(R.id.aprHistoryPlot);
+
+        azimuthHistorySeries = new SimpleXYSeries("Az.");
+        azimuthHistorySeries.useImplicitXVals();
+
+        aprHistoryPlot.setRangeBoundaries(-180, 359, BoundaryMode.FIXED);
+        aprHistoryPlot.setDomainBoundaries(0, HISTORY_SIZE, BoundaryMode.FIXED);
+        aprHistoryPlot.addSeries(azimuthHistorySeries,
+                new LineAndPointFormatter(
+                        Color.rgb(100, 100, 200), null, null, null));
+        aprHistoryPlot.setDomainStepMode(XYStepMode.INCREMENT_BY_VAL);
+        aprHistoryPlot.setDomainStepValue(HISTORY_SIZE/10);
+        aprHistoryPlot.setTicksPerRangeLabel(3);
+        aprHistoryPlot.setDomainLabel("Tiempo");
+        aprHistoryPlot.getDomainLabelWidget().pack();
+        aprHistoryPlot.setRangeLabel("poner");
+        aprHistoryPlot.getRangeLabelWidget().pack();
+
+        aprHistoryPlot.setRangeValueFormat(new DecimalFormat("#"));
+        aprHistoryPlot.setDomainValueFormat(new DecimalFormat("#"));
+
+        final PlotStatistics histStats = new PlotStatistics(1000, false);
+
+        aprHistoryPlot.addListener(histStats);
+        redrawer = new Redrawer(
+                Arrays.asList(new Plot[]{aprHistoryPlot}),
+                100, false);
+        selec=-1;
     }
 
     @Override
@@ -344,6 +396,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
         return sensores;
     }
 
+
     private class UpdateSensors extends AsyncTask<String, String, String>{
 
         @Override
@@ -368,20 +421,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
 
                 }
 
-
-                //tv_temperatura.setText("dasdasdasdasd");
-
-            /*int bufferMaxLength=epIN.getMaxPacketSize();
-            ByteBuffer mBuffer = ByteBuffer.allocate(bufferMaxLength);
-            UsbRequest inRequest = new UsbRequest();
-            inRequest.initialize(mUsbDeviceConnection, epIN);
-            long cont=0;
-            //while(cont==0){if(inRequest.queue(mBuffer, bufferMaxLength)){
-            while(inRequest.queue(mBuffer, bufferMaxLength)){
-                mUsbDeviceConnection.requestWait();*/
-
                 try {
-                    //tv_temperatura.setText(new String(mBuffer.array(), "UTF-8"));
                     String salida= "";
                     // Recogemos los datos que recibimos en un
                     line =  data.trim();
@@ -435,6 +475,10 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
                 if (!(procesar[i].isEmpty())){
                     Log.d(TAG,"Procesando: "+procesar[i]+" "+procesar[i+1]);
                     SensorTemplate sensor= sensores.get(Integer.parseInt(procesar[i]));
+                    if (selec==Integer.parseInt(procesar[i])){
+                        but_addSensor.setText("sí");
+                        addValorGrafica(Float.parseFloat(procesar[i+1]));
+                    }
                     // Update adapter to change list vew information
                     sensorListValues.get(Integer.parseInt(procesar[i])).put("value", procesar[i+1]);
                     adapter.notifyDataSetChanged();
@@ -458,6 +502,17 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             */
         }
 
+    }
+
+
+
+    public  void addValorGrafica(float value){
+        if (azimuthHistorySeries.size() > HISTORY_SIZE) {
+            azimuthHistorySeries.removeFirst();
+        }
+
+        // add the latest history sample:
+        azimuthHistorySeries.addLast(null, value);
     }
 
     @Override
@@ -491,5 +546,13 @@ public class SensoresAndroid extends Activity implements View.OnClickListener{
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+
+        selec=pos;
+        SensorTemplate sensor = sensores.get(pos);
+        //tv_temperatura.setText(sensor.getNombre());
     }
 }
