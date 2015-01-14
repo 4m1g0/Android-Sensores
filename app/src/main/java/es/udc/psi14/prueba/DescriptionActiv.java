@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -131,6 +132,14 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
         //Long[] fecha= fechas;
 
         Number[] numSightings = {5, 8, 9, 2, 5};
+        List<Number> dates = new LinkedList<Number>();
+        for (SensorValue sensor : values) {
+            dates.add(sensor.getFecha());
+        }
+        List<Number> medidas = new LinkedList<Number>();
+        for (SensorValue sensor : values) {
+            medidas.add(sensor.getMedida());
+        }
 
         // an array of years in milliseconds:
         Number[] years = {
@@ -142,8 +151,8 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
         };
 
         XYSeries series2 = new SimpleXYSeries(
-                Arrays.asList(years),
-                Arrays.asList(numSightings),
+                dates,
+                medidas,
                 sensorTemplate.getNombre());
 
         plot1.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
