@@ -108,11 +108,34 @@ public class DescriptionActiv extends Activity {
         lv_values.setAdapter(new SensorValuesAdapter(this, sensorListValues));
 
 
-        Float[] numSightings= valores;
-        Long[] fecha= fechas;
+        //Float[] numSightings= valores;
+        //Long[] fecha= fechas;
+        Number[] numSightings = {5.1, 8, 9, 2, 5};
+
+        // an array of years in milliseconds:
+        /*Number[] years= new Number[5];
+        years[0]=fechas[0];
+        years[1]=fechas[1];
+        years[2]=fechas[2];
+        years[3]=fechas[3];
+        years[4]=fechas[4];
+        */
+
+
+
+        Number[] years = {
+                978307200,  // 2001
+                1009843200, // 2002
+                1041379200, // 2003
+                1072915200, // 2004
+                1104537600  // 2005
+                };
+
+        tv_name.setText(""+fechas[0]);
+        tv_unidades.setText(""+years[0]);
         Log.e("pene", "Seclecionados: " + fechas.length + "valores" );
         XYSeries series2 = new SimpleXYSeries(
-                Arrays.asList(fecha),
+                Arrays.asList(years),
                 Arrays.asList(numSightings),
                 sensorTemplate.getNombre());
 
@@ -143,13 +166,13 @@ public class DescriptionActiv extends Activity {
         lineFill.setShader(new LinearGradient(0, 0, 200, 200, Color.WHITE, Color.GREEN, Shader.TileMode.CLAMP));
 
         LineAndPointFormatter formatter  =
-                new LineAndPointFormatter(Color.rgb(0, 0,0), Color.BLUE, Color.RED, null);
+                new LineAndPointFormatter(Color.rgb(100, 0,0), Color.BLUE, Color.RED, null);
         formatter.setFillPaint(lineFill);
         plot1.getGraphWidget().setPaddingRight(2);
         plot1.addSeries(series2, formatter);
 
         // draw a domain tick for each year:
-        plot1.setDomainStep(XYStepMode.SUBDIVIDE, fecha.length);
+        plot1.setDomainStep(XYStepMode.SUBDIVIDE, years.length);
 
         // customize our domain/range labels
         plot1.setDomainLabel("hora");
@@ -171,6 +194,7 @@ public class DescriptionActiv extends Activity {
                 // because our timestamps are in seconds and SimpleDateFormat expects milliseconds
                 // we multiply our timestamp by 1000:
                 long timestamp = ((Number) obj).longValue() * 1000;
+                //long timestamp = ((Number) obj).longValue();
                 Date date = new Date(timestamp);
                 return dateFormat.format(date, toAppendTo, pos);
             }
@@ -181,6 +205,7 @@ public class DescriptionActiv extends Activity {
 
             }
         });
+        plot1.redraw();
 
     }
 
