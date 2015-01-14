@@ -71,6 +71,30 @@
         android:id="@+id/servo_bar"
         android:visibility="gone" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/et_rate"
+            android:layout_weight="1"
+            android:hint="@string/periodo_str" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/update_str"
+            android:id="@+id/but_rate"
+            android:layout_gravity="right"
+            android:layout_weight="1" />
+    </LinearLayout>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

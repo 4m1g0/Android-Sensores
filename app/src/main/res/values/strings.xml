@@ -36,5 +36,7 @@
     <string name="sensor_name_str">Nombre del sensor: </string>
     <string name="nombre_sensor_str">Nombre del sensor: </string>
     <string name="not_found_str">Sensor no encontrado</string>
+    <string name="update_str">Actualizar</string>
+    <string name="periodo_str">Periodo de muestreo (ms)</string>
 
 </resources>

@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -56,7 +57,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
 
 
     //  Variables GUI
-    Button but_conectar, but_addSensor;
+    Button but_conectar, but_addSensor, but_rate;
+    EditText et_rate;
     ListView lv_sensor_list;
     ArrayList<Map<String, String>> sensorListValues;
     Switch but_led;
@@ -169,6 +171,8 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         but_led.setOnClickListener(this);
         lv_sensor_list = (ListView) findViewById(R.id.sensor_list);
         servo_bar = (SeekBar) findViewById(R.id.servo_bar);
+        but_rate = (Button) findViewById(R.id.but_rate);
+        et_rate = (EditText) findViewById(R.id.et_rate);
 
         lv_sensor_list.setOnItemClickListener(this);
         servo_bar.setMax(120);
@@ -348,7 +352,11 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         }else if (v== but_addSensor){
             Intent intent = new Intent(this, AddSensorActiv.class);
             startActivityForResult(intent, 1);
+        }else if (v== but_rate){
+            enviarMsg("T" + et_rate.getText().toString(), mUsbDeviceConnection, epOUT);
         }
+
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
