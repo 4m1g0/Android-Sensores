@@ -1,7 +1,6 @@
 package es.udc.psi14.prueba;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -11,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -54,13 +52,14 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
     SensorValueDataBaseHelper dbValues;
     SensorValuesAdapter adapter;
     ArrayList<Map<String, String>> sensorListValues;
+    private long id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        long id = intent.getLongExtra("sensor_id", 0);
+        id = intent.getLongExtra("sensor_id", 0);
 
         setContentView(R.layout.activity_description);
         tv_name = (TextView) findViewById(R.id.tv_name);
@@ -142,7 +141,6 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
                 1104537600  // 2005
         };
 
-        Log.e("pene", "Seclecionados: " + fechas.length + "valores" );
         XYSeries series2 = new SimpleXYSeries(
                 Arrays.asList(years),
                 Arrays.asList(numSightings),
@@ -228,7 +226,7 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
                 FileOutputStream fOut = new FileOutputStream(file);
                 OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
                 for (SensorValue value : values) {
-                    myOutWriter.append(value.getId() + ", " + value.getFecha() + ", " + value.getSensorId() + ", " + value.getMedida() + "\n");
+                    myOutWriter.append(value.getFecha() + ", " + value.getMedida() + "\n");
                 }
 
                 myOutWriter.close();
@@ -250,7 +248,7 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
                 while ((aDataRow = myReader.readLine()) != null)
                 {
                     aBuffer = aDataRow.split(",");
-                    SensorValue value = new SensorValue(Float.parseFloat(aBuffer[3].trim()), Long.parseLong(aBuffer[2].trim()), Long.parseLong(aBuffer[1].trim()), Long.parseLong(aBuffer[0].trim()));
+                    SensorValue value = new SensorValue(Float.parseFloat(aBuffer[1].trim()), id, Long.parseLong(aBuffer[0].trim()));
                     dbValues.insertSensor(value);
                     HashMap<String, String> item = new HashMap<String, String>();
                     item.put("medida", String.valueOf(value.getMedida()) + sensorTemplate.getUnidades());
