@@ -68,16 +68,16 @@ public class DescriptionActiv extends Activity {
         ArrayList<Map<String, String>> sensorListValues = new ArrayList<Map<String, String>>();
         for (SensorValue value : values) {
             HashMap<String, String> item = new HashMap<String, String>();
-            item.put("value", String.valueOf(value.getMedida()) + sensorTemplate.getUnidades());
+            item.put("medida", String.valueOf(value.getMedida()) + sensorTemplate.getUnidades());
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(value.getFecha());
-            item.put("name", formatter.format(calendar.getTime()));
+            item.put("fecha", formatter.format(calendar.getTime()));
 
             sensorListValues.add(item);
         }
-        lv_values.setAdapter(new SensorListAdapter(this, sensorListValues));
+        lv_values.setAdapter(new SensorValuesAdapter(this, sensorListValues));
 
     }
 
