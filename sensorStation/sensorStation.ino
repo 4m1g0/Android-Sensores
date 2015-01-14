@@ -68,7 +68,7 @@ int SENSORS_TIME = 3000;
 #define TAMSTRING 15
 int lcdActual = 0;
 int encender = 0;
-int led = 13;
+int led = 8;
 int contador=0;
 String string = "";
 
@@ -135,7 +135,23 @@ void loop()
   if (Serial.available() > 0){
        char command = Serial.read();
        int angle;
-       switch (command) {
+       if (command == 'L') {
+                encender = Serial.parseInt();
+                if (encender == 0) {
+                    digitalWrite(led, LOW);
+                } else{
+                    digitalWrite(led,HIGH);
+                }
+       } else if (command == 'S') {
+                angle = Serial.parseInt();
+                myservo.write(constrain(angle, 0, 180));
+       } else if (command == 'T') {
+            int time = Serial.parseInt();
+            time = constrain(time*1000, 500, 5000);
+            if (time >= 500 && time <= 5000)
+                SENSORS_TIME = time;
+       }
+       /*switch (command) {
             case 'L':
                 encender = Serial.parseInt();
                 if (encender == 0) {
@@ -151,7 +167,7 @@ void loop()
             case 'T':
                 SENSORS_TIME = constrain(Serial.parseInt()*1000, 500, 5000);
                 break;
-       }
+       }*/
        
   }
   
