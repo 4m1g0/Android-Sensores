@@ -149,7 +149,7 @@ void loop()
                 myservo.write(constrain(angle, 0, 180));
                 break;
             case 'T':
-                SENSORS_TIME = constrain(Serial.parseInt(), 1, 5000);
+                SENSORS_TIME = constrain(Serial.parseInt(), 500, 5000);
                 break;
        }
        
