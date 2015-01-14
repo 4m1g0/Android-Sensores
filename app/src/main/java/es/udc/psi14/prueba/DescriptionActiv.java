@@ -9,6 +9,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -109,6 +110,7 @@ public class DescriptionActiv extends Activity {
 
         Float[] numSightings= valores;
         Long[] fecha= fechas;
+        Log.e("pene", "Seclecionados: " + fechas.length + "valores" );
         XYSeries series2 = new SimpleXYSeries(
                 Arrays.asList(fecha),
                 Arrays.asList(numSightings),

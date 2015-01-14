@@ -576,7 +576,7 @@ public class SensoresAndroid extends Activity implements View.OnClickListener, A
         azimuthHistorySeries.setTitle(sensor.getNombre());
         aprHistoryPlot.setRangeLabel(sensor.getUnidades());
         aprHistoryPlot.redraw();
-        Log.e(TAG, "Seclecionado" + sensor.getNombre());
+
         //tv_temperatura.setText(sensor.getNombre());
     }
 }
