@@ -225,7 +225,7 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
                 FileOutputStream fOut = new FileOutputStream(file);
                 OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
                 for (SensorValue value : values) {
-                    myOutWriter.append(value.getId() + ", " + value.getFecha() + ", " + value.getSensorId() + ", " + value.getMedida());
+                    myOutWriter.append(value.getId() + ", " + value.getFecha() + ", " + value.getSensorId() + ", " + value.getMedida() + "\n");
                 }
 
                 myOutWriter.close();
