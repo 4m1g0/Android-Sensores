@@ -10,6 +10,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -211,9 +212,11 @@ public class DescriptionActiv extends Activity implements View.OnClickListener{
     public void onClick(View v) {
         if (v == but_export) {
             try {
-                File myFile = new File("/sdcard/export.txt");
-                myFile.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(myFile);
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File file = new File(path, "export.csv");
+
+                file.createNewFile();
+                FileOutputStream fOut = new FileOutputStream(file);
                 OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm");
                 Calendar calendar = Calendar.getInstance();
