@@ -28,7 +28,7 @@ public class DescriptionActiv extends Activity {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("sensor_id", 0);
+        long id = intent.getLongExtra("sensor_id", 0);
 
         setContentView(R.layout.activity_description);
         tv_name = (TextView) findViewById(R.id.tv_name);

@@ -79,7 +79,7 @@ public class SensorTemplateDataBaseHelper extends SQLiteOpenHelper {
                 null,null, null);
     }
 
-    public Cursor getSensor(int id) {
+    public Cursor getSensor(long id) {
         return getWritableDatabase().query(TABLE_NOMBRE, null, COL_ID+"=?", new String[] { String.valueOf(id) }, null,null,null);
     }
 
